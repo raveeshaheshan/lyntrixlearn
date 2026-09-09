@@ -11,6 +11,8 @@ import { uploadToR2 } from '../../lib/r2Storage';
  * @param {string} [props.helperText] - Subtitle instructions
  * @param {string} [props.currentUrl] - Existing URL if already uploaded
  * @param {function} props.onUploadSuccess - Callback with { url, key, name, size, type }
+ * @param {function} [props.onFileSelected] - Callback when file is picked (before upload finishes)
+ * @param {function} [props.onUploadCancel] - Callback when upload is cancelled
  * @param {boolean} [props.isImage=false] - If true, displays image preview
  * @param {number} [props.maxSizeMB=50] - Maximum file size in megabytes
  */
@@ -21,10 +23,13 @@ export const R2FileUploader = ({
   helperText = 'Files are securely stored on Cloudflare R2 CDN',
   currentUrl = '',
   onUploadSuccess,
+  onFileSelected,
+  onUploadCancel,
   isImage = false,
   maxSizeMB = 50,
 }) => {
   const fileInputRef = useRef(null);
+  const abortControllerRef = useRef(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadedFile, setUploadedFile] = useState(
@@ -40,8 +45,30 @@ export const R2FileUploader = ({
     }
   };
 
+  const handleCancelUpload = (e) => {
+    e?.stopPropagation?.();
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setIsUploading(false);
+    setUploadProgress(0);
+    setErrorMsg('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    if (onUploadCancel) {
+      onUploadCancel();
+    }
+  };
+
   const processFileUpload = async (file) => {
     setErrorMsg('');
+
+    // Trigger file selected callback (e.g. for duration calculation or name extraction)
+    if (onFileSelected) {
+      onFileSelected(file);
+    }
 
     // File size validation
     const maxBytes = maxSizeMB * 1024 * 1024;
@@ -50,21 +77,32 @@ export const R2FileUploader = ({
       return;
     }
 
+    // Create a new AbortController for this upload
+    abortControllerRef.current = new AbortController();
+
     setIsUploading(true);
-    setUploadProgress(20);
+    setUploadProgress(15);
 
     try {
-      // Simulate progress indicator
+      // Simulate progressive visual feedback
       const progressTimer = setInterval(() => {
-        setUploadProgress((prev) => (prev >= 85 ? prev : prev + 15));
-      }, 150);
+        setUploadProgress((prev) => (prev >= 90 ? prev : prev + 15));
+      }, 200);
 
       const result = await uploadToR2({
         file,
         folder,
+        abortSignal: abortControllerRef.current.signal,
       });
 
       clearInterval(progressTimer);
+
+      if (result.cancelled) {
+        setIsUploading(false);
+        setUploadProgress(0);
+        return;
+      }
+
       setUploadProgress(100);
 
       setUploadedFile({
@@ -78,10 +116,16 @@ export const R2FileUploader = ({
         onUploadSuccess(result);
       }
     } catch (err) {
+      if (err.name === 'AbortError' || abortControllerRef.current?.signal?.aborted) {
+        setIsUploading(false);
+        setUploadProgress(0);
+        return;
+      }
       console.error('R2 Upload Failed:', err);
       setErrorMsg(err.message || 'Upload to Cloudflare R2 failed. Please try again.');
     } finally {
       setIsUploading(false);
+      abortControllerRef.current = null;
     }
   };
 
@@ -150,10 +194,22 @@ export const R2FileUploader = ({
         >
           {isUploading ? (
             <div className="py-3 space-y-3">
-              <div className="flex items-center justify-center gap-2 text-blue-600 font-bold text-xs">
-                <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Uploading to Cloudflare R2 ({uploadProgress}%)...</span>
+              <div className="flex items-center justify-between gap-3 max-w-xs mx-auto">
+                <div className="flex items-center gap-2 text-blue-600 font-bold text-xs">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Uploading to Cloudflare R2 ({uploadProgress}%)...</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCancelUpload}
+                  className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 hover:text-rose-800 rounded-lg text-xs font-bold transition flex items-center gap-1 border border-rose-200 shadow-sm shrink-0"
+                  title="Cancel upload"
+                >
+                  <X className="w-3.5 h-3.5" />
+                  <span>Cancel</span>
+                </button>
               </div>
+
               {/* Progress bar */}
               <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden max-w-xs mx-auto">
                 <div

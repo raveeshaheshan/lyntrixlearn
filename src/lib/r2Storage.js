@@ -25,16 +25,22 @@ function getS3Client() {
 }
 
 /**
- * Upload any File or Blob to Cloudflare R2
+ * Upload any File or Blob to Cloudflare R2 with abort signal support
  * @param {Object} options
  * @param {File|Blob} options.file - The File or Blob to upload
- * @param {string} [options.folder='uploads'] - Folder prefix in bucket (e.g. 'slips', 'notes', 'thumbnails', 'assignments')
+ * @param {string} [options.folder='uploads'] - Folder prefix in bucket (e.g. 'slips', 'notes', 'thumbnails', 'videos')
  * @param {string} [options.fileName] - Optional custom file name
- * @returns {Promise<{ key: string, url: string, name: string, size: number, type: string }>}
+ * @param {AbortSignal} [options.abortSignal] - AbortSignal to cancel the upload
+ * @returns {Promise<{ key: string, url: string, name: string, size: number, type: string, cancelled?: boolean }>}
  */
-export async function uploadToR2({ file, folder = 'uploads', fileName = null }) {
+export async function uploadToR2({ file, folder = 'uploads', fileName = null, abortSignal = null }) {
   if (!file) {
     throw new Error('No file provided for upload.');
+  }
+
+  // Check if already aborted before starting
+  if (abortSignal?.aborted) {
+    return { cancelled: true };
   }
 
   // Generate safe filename
@@ -48,6 +54,11 @@ export async function uploadToR2({ file, folder = 'uploads', fileName = null }) 
 
     // Convert File/Blob to ArrayBuffer for compatibility
     const arrayBuffer = await file.arrayBuffer();
+    
+    if (abortSignal?.aborted) {
+      return { cancelled: true };
+    }
+
     const uint8Array = new Uint8Array(arrayBuffer);
 
     const command = new PutObjectCommand({
@@ -57,7 +68,7 @@ export async function uploadToR2({ file, folder = 'uploads', fileName = null }) 
       ContentType: file.type || 'application/octet-stream',
     });
 
-    await s3.send(command);
+    await s3.send(command, { abortSignal });
 
     // Build the public CDN URL
     const publicUrl = `${R2_PUBLIC_DOMAIN.replace(/\/$/, '')}/${fileKey}`;
@@ -71,9 +82,57 @@ export async function uploadToR2({ file, folder = 'uploads', fileName = null }) 
       type: file.type,
     };
   } catch (error) {
+    if (error.name === 'AbortError' || abortSignal?.aborted) {
+      return { cancelled: true };
+    }
     console.error('Cloudflare R2 Upload Error:', error);
     throw error;
   }
+}
+
+/**
+ * Utility to calculate video duration from File or Blob
+ * @param {File|Blob} file 
+ * @returns {Promise<{ durationSec: number, formatted: string } | null>}
+ */
+export function calculateVideoDuration(file) {
+  return new Promise((resolve) => {
+    if (!file || !file.type.startsWith('video/')) {
+      resolve(null);
+      return;
+    }
+
+    const video = document.createElement('video');
+    video.preload = 'metadata';
+
+    video.onloadedmetadata = () => {
+      window.URL.revokeObjectURL(video.src);
+      const durationSec = Math.round(video.duration);
+      if (!durationSec || isNaN(durationSec)) {
+        resolve(null);
+        return;
+      }
+
+      const hours = Math.floor(durationSec / 3600);
+      const minutes = Math.floor((durationSec % 3600) / 60);
+      const seconds = durationSec % 60;
+
+      let formatted = '';
+      if (hours > 0) {
+        formatted = `${hours}h ${minutes > 0 ? minutes + 'm' : ''}`.trim();
+      } else {
+        formatted = `${minutes}m ${seconds > 0 ? seconds + 's' : ''}`.trim();
+      }
+
+      resolve({ durationSec, formatted: formatted || '1m' });
+    };
+
+    video.onerror = () => {
+      resolve(null);
+    };
+
+    video.src = URL.createObjectURL(file);
+  });
 }
 
 export { R2_PUBLIC_DOMAIN, R2_BUCKET_NAME };

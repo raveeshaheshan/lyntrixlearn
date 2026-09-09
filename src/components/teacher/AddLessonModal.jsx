@@ -9,9 +9,11 @@ import {
   Link as LinkIcon, 
   Clock, 
   BookOpen, 
-  X 
+  X,
+  CheckCircle2
 } from 'lucide-react';
 import { R2FileUploader } from '../common/R2FileUploader';
+import { calculateVideoDuration } from '../../lib/r2Storage';
 import confetti from 'canvas-confetti';
 import { sound } from '../../utils/soundEffects';
 
@@ -31,7 +33,25 @@ export const AddLessonModal = ({ isOpen, onClose }) => {
     notesPdfUrl: '',
   });
 
+  const [detectedDurationBadge, setDetectedDurationBadge] = useState('');
+
   if (!isOpen) return null;
+
+  // Auto-calculate video duration from selected file
+  const handleVideoFileSelected = async (file) => {
+    if (file && file.type.startsWith('video/')) {
+      try {
+        const durationInfo = await calculateVideoDuration(file);
+        if (durationInfo?.formatted) {
+          setFormData((prev) => ({ ...prev, duration: durationInfo.formatted }));
+          setDetectedDurationBadge(`Auto-detected: ${durationInfo.formatted}`);
+          showToast(`Video duration auto-detected: ${durationInfo.formatted}`, 'info');
+        }
+      } catch (e) {
+        console.warn('Could not auto-calculate video duration:', e);
+      }
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -110,7 +130,7 @@ export const AddLessonModal = ({ isOpen, onClose }) => {
             </select>
           </div>
 
-          {/* Lesson Title & Unit */}
+          {/* Lesson Title & Unit & Duration */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="sm:col-span-2">
               <label className="block text-xs font-bold text-slate-700 mb-1">Lecture Title:</label>
@@ -125,32 +145,44 @@ export const AddLessonModal = ({ isOpen, onClose }) => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Unit / Duration:</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-bold text-slate-700">Unit / Duration:</label>
+                {detectedDurationBadge && (
+                  <span className="text-[9px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded animate-in fade-in">
+                    {detectedDurationBadge}
+                  </span>
+                )}
+              </div>
               <div className="flex gap-1.5">
                 <input
                   type="text"
                   placeholder="Unit 05"
                   value={formData.unit}
                   onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                  className="w-24 bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2.5 text-xs text-slate-900 font-bold focus:outline-none"
+                  className="w-20 bg-slate-50 border border-slate-200 rounded-xl px-2 py-2.5 text-xs text-slate-900 font-bold focus:outline-none"
+                  title="Lesson Unit"
                 />
                 <input
                   type="text"
-                  placeholder="2h 30m"
+                  placeholder="2h 15m"
                   value={formData.duration}
-                  onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                  className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2.5 text-xs text-slate-900 font-mono focus:outline-none"
+                  onChange={(e) => {
+                    setFormData({ ...formData, duration: e.target.value });
+                    setDetectedDurationBadge('');
+                  }}
+                  className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2.5 text-xs text-slate-900 font-mono font-bold focus:outline-none focus:border-blue-500"
+                  title="Duration (Auto-calculated upon video selection)"
                 />
               </div>
             </div>
           </div>
 
-          {/* Video Delivery Selector */}
-          <div className="space-y-2 p-3.5 bg-slate-50 rounded-2xl border border-slate-200">
+          {/* Video Delivery Selector with Cancel Option */}
+          <div className="space-y-2.5 p-3.5 bg-slate-50 rounded-2xl border border-slate-200">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                 <Video className="w-4 h-4 text-blue-600" />
-                Video Source:
+                Video Delivery Source:
               </span>
               <div className="flex gap-1 bg-white p-1 rounded-xl border border-slate-200 text-xs">
                 <button
@@ -187,11 +219,17 @@ export const AddLessonModal = ({ isOpen, onClose }) => {
                 folder="videos"
                 accept="video/mp4,video/webm,video/*"
                 label=""
-                helperText="Upload lecture MP4 directly to Cloudflare R2 bucket"
+                helperText="Upload lecture MP4 directly to Cloudflare R2 bucket. Duration will be auto-calculated."
                 maxSizeMB={500}
+                onFileSelected={handleVideoFileSelected}
+                onUploadCancel={() => {
+                  showToast('Video upload cancelled by user.', 'info');
+                  setFormData((prev) => ({ ...prev, videoUrl: '' }));
+                }}
                 onUploadSuccess={(res) => {
                   if (res.url) {
                     setFormData((prev) => ({ ...prev, videoUrl: res.url }));
+                    showToast('Video successfully uploaded to Cloudflare R2!', 'success');
                   }
                 }}
               />
@@ -206,6 +244,9 @@ export const AddLessonModal = ({ isOpen, onClose }) => {
               label="Lecture Notes & Tute PDF (Cloudflare R2)"
               helperText="Upload course tute or theory notes. Students can download from R2 CDN."
               maxSizeMB={100}
+              onUploadCancel={() => {
+                showToast('Notes upload cancelled.', 'info');
+              }}
               onUploadSuccess={(res) => {
                 if (res.url) {
                   setFormData((prev) => ({
@@ -227,6 +268,9 @@ export const AddLessonModal = ({ isOpen, onClose }) => {
               helperText="Upload custom lecture cover image"
               isImage={true}
               currentUrl={formData.thumbnail}
+              onUploadCancel={() => {
+                showToast('Thumbnail upload cancelled.', 'info');
+              }}
               onUploadSuccess={(res) => {
                 if (res.url) {
                   setFormData((prev) => ({ ...prev, thumbnail: res.url }));
