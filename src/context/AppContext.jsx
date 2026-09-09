@@ -198,6 +198,9 @@ export const AppProvider = ({ children }) => {
     return [];
   });
 
+  // Active Quiz State (Declared before any effects reference it)
+  const [activeQuiz, setActiveQuiz] = useState(null);
+
   // ----------------------------------------------------
   // Persistent Storage Sync Effects
   // ----------------------------------------------------
@@ -635,7 +638,6 @@ export const AppProvider = ({ children }) => {
 
   // Active Modals / Interactive Sub-states
   const [activeLesson, setActiveLesson] = useState(null);
-  const [activeQuiz, setActiveQuiz] = useState(null);
   const [paymentModalData, setPaymentModalData] = useState(null);
   const [selectedSlipForReview, setSelectedSlipForReview] = useState(null);
   const [showIdCardModal, setShowIdCardModal] = useState(false);
