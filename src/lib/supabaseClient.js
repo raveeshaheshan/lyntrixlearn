@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Live Supabase project credentials for Lyntrix Learn
-const SUPABASE_PROJECT_URL = import.meta.env.VITE_SUPABASE_URL || 'https://kgqkelydepsfkzhrnndz.supabase.co';
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_bgL8mZm7AsKCY0OijP_vNw_So-6HiwN';
+const SUPABASE_PROJECT_URL = import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL || 'https://cqvnpuigmthjvdjejfdn.supabase.co';
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_LxcvgQYqR4tNnpSW89s6tw_R-L5JPSZ';
 
 // Create Supabase client instance with realtime enabled
 export const supabase = createClient(SUPABASE_PROJECT_URL, SUPABASE_ANON_KEY, {

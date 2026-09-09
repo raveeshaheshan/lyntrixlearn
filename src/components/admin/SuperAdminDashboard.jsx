@@ -167,7 +167,7 @@ export const SuperAdminDashboard = () => {
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-emerald-900">
-                Live Supabase PostgreSQL Connected: <code className="text-emerald-700 font-mono">kgqkelydepsfkzhrnndz</code>
+                Live Supabase PostgreSQL Connected: <code className="text-emerald-700 font-mono">cqvnpuigmthjvdjejfdn</code>
               </span>
               <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-300">
                 Realtime Active
@@ -181,7 +181,7 @@ export const SuperAdminDashboard = () => {
 
         <div className="flex items-center gap-2 shrink-0">
           <a
-            href="https://supabase.com/dashboard/project/kgqkelydepsfkzhrnndz/sql"
+            href="https://supabase.com/dashboard/project/cqvnpuigmthjvdjejfdn/sql"
             target="_blank"
             rel="noopener noreferrer"
             className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-500/20 transition flex items-center gap-1.5"
