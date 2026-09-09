@@ -83,6 +83,22 @@ const DEFAULT_STUDENT = {
   ]
 };
 
+// Fast Client Session Cache Helpers (Instant 0ms initial paint)
+const getStoredCache = (key, fallback) => {
+  try {
+    const raw = sessionStorage.getItem(`lyntrix_fast_cache_${key}`);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch (e) {
+    return fallback;
+  }
+};
+
+const setStoredCache = (key, val) => {
+  try {
+    sessionStorage.setItem(`lyntrix_fast_cache_${key}`, JSON.stringify(val));
+  } catch (e) {}
+};
+
 export const AppProvider = ({ children }) => {
   // Navigation & Role State: 'landing' | 'admin' | 'teacher' | 'student' | 'scanner'
   const [currentRole, setCurrentRole] = useState('landing');
@@ -103,16 +119,16 @@ export const AppProvider = ({ children }) => {
     }
   }, [theme]);
 
-  // Active Entities (Initialized with clean live DB defaults)
-  const [instructors, setInstructors] = useState([DEFAULT_INSTRUCTOR]);
-  const [currentTeacherId, setCurrentTeacherId] = useState(DEFAULT_INSTRUCTOR.id);
+  // Active Entities (Initialized with fast cache or clean live DB defaults)
+  const [instructors, setInstructors] = useState(() => getStoredCache('instructors', [DEFAULT_INSTRUCTOR]));
+  const [currentTeacherId, setCurrentTeacherId] = useState(() => getStoredCache('currentTeacherId', DEFAULT_INSTRUCTOR.id));
   
-  const [students, setStudents] = useState([DEFAULT_STUDENT]);
-  const [currentStudentId, setCurrentStudentId] = useState(DEFAULT_STUDENT.id);
+  const [students, setStudents] = useState(() => getStoredCache('students', [DEFAULT_STUDENT]));
+  const [currentStudentId, setCurrentStudentId] = useState(() => getStoredCache('currentStudentId', DEFAULT_STUDENT.id));
   
-  const [lessons, setLessons] = useState([]);
-  const [bankSlips, setBankSlips] = useState([]);
-  const [attendanceLogs, setAttendanceLogs] = useState([]);
+  const [lessons, setLessons] = useState(() => getStoredCache('lessons', []));
+  const [bankSlips, setBankSlips] = useState(() => getStoredCache('bankSlips', []));
+  const [attendanceLogs, setAttendanceLogs] = useState(() => getStoredCache('attendanceLogs', []));
   const [quizzes, setQuizzes] = useState(INITIAL_QUIZZES || []);
   const [quizSubmissions, setQuizSubmissions] = useState([]);
 
@@ -152,16 +168,41 @@ export const AppProvider = ({ children }) => {
   }, [instructors]);
 
   // ----------------------------------------------------
-  // Live Supabase Realtime Listeners (Instant Multi-Tab Sync)
+  // Live Supabase Realtime Listeners (Instant Multi-Tab Sync with Parallel Fetch)
   // ----------------------------------------------------
   useEffect(() => {
     if (!isSupabaseConfigured()) return;
 
-    // 1. Initial live fetch from Supabase
+    // 1. Initial parallel live fetch from Supabase with 3.5s timeout protection
     const fetchLiveSupabaseData = async () => {
       try {
-        // Fetch Batches
-        const { data: dbBatches } = await supabase.from('batches').select('*');
+        const [
+          batchesRes, 
+          studentsRes, 
+          teachersRes, 
+          slipsRes, 
+          attendanceRes, 
+          lessonsRes
+        ] = await Promise.race([
+          Promise.all([
+            supabase.from('batches').select('*'),
+            supabase.from('profiles').select('*').eq('role', 'student').order('created_at', { ascending: false }),
+            supabase.from('teachers').select('*').order('created_at', { ascending: false }),
+            supabase.from('bank_slips').select('*').order('created_at', { ascending: false }),
+            supabase.from('attendance_logs').select('*').order('created_at', { ascending: false }),
+            supabase.from('lessons').select('*').order('created_at', { ascending: false })
+          ]),
+          new Promise((resolve) => setTimeout(() => resolve([{}, {}, {}, {}, {}, {}]), 3500))
+        ]);
+
+        const dbBatches = batchesRes?.data;
+        const dbStudents = studentsRes?.data;
+        const dbTeachers = teachersRes?.data;
+        const dbSlips = slipsRes?.data;
+        const dbAttendance = attendanceRes?.data;
+        const dbLessons = lessonsRes?.data;
+
+        // Process Batches Map
         const teacherBatchesMap = {};
         if (dbBatches && dbBatches.length > 0) {
           dbBatches.forEach(b => {
@@ -186,8 +227,7 @@ export const AppProvider = ({ children }) => {
           });
         }
 
-        // Fetch Live Registered Students (Profiles with role = 'student')
-        const { data: dbStudents } = await supabase.from('profiles').select('*').eq('role', 'student').order('created_at', { ascending: false });
+        // Process Students
         if (dbStudents && dbStudents.length > 0) {
           const liveStudents = dbStudents.map(s => ({
             id: s.id,
@@ -219,13 +259,13 @@ export const AppProvider = ({ children }) => {
             ]
           }));
           setStudents(liveStudents);
+          setStoredCache('students', liveStudents);
           if (liveStudents[0]) {
             setCurrentStudentId(liveStudents[0].id);
           }
         }
 
-        // Fetch Live Supabase Teachers
-        const { data: dbTeachers } = await supabase.from('teachers').select('*').order('created_at', { ascending: false });
+        // Process Teachers
         if (dbTeachers && dbTeachers.length > 0) {
           const studentCount = dbStudents ? dbStudents.length : 1;
           const liveTeachers = dbTeachers.map(t => {
@@ -279,15 +319,14 @@ export const AppProvider = ({ children }) => {
             };
           });
 
-          // Set ONLY live teachers from the database (No mock data!)
           setInstructors(liveTeachers);
+          setStoredCache('instructors', liveTeachers);
           if (liveTeachers[0]) {
             setCurrentTeacherId(liveTeachers[0].id);
           }
         }
 
-        // Live Bank Slips Fetch
-        const { data: dbSlips } = await supabase.from('bank_slips').select('*').order('created_at', { ascending: false });
+        // Process Bank Slips
         if (dbSlips) {
           const formattedSlips = dbSlips.map(s => ({
             id: s.id,
@@ -308,10 +347,10 @@ export const AppProvider = ({ children }) => {
             remarks: s.remarks || ''
           }));
           setBankSlips(formattedSlips);
+          setStoredCache('bankSlips', formattedSlips);
         }
 
-        // Live Attendance Logs Fetch
-        const { data: dbAttendance } = await supabase.from('attendance_logs').select('*').order('created_at', { ascending: false });
+        // Process Attendance Logs
         if (dbAttendance) {
           const formattedLogs = dbAttendance.map(a => ({
             id: a.id,
@@ -326,16 +365,17 @@ export const AppProvider = ({ children }) => {
             feeStatus: a.fee_status || 'Paid'
           }));
           setAttendanceLogs(formattedLogs);
+          setStoredCache('attendanceLogs', formattedLogs);
         }
 
-        // Live Lessons Fetch
-        const { data: dbLessons } = await supabase.from('lessons').select('*').order('created_at', { ascending: false });
+        // Process Lessons
         if (dbLessons) {
           setLessons(dbLessons);
+          setStoredCache('lessons', dbLessons);
         }
 
       } catch (err) {
-        console.warn('Initial Supabase live fetch:', err);
+        console.warn('Live Supabase parallel fetch fallback:', err);
       }
     };
 
@@ -398,20 +438,21 @@ export const AppProvider = ({ children }) => {
       }
     });
 
-    // 5. Realtime Teachers & Batches & Profiles Sync
-    const unsubTeachers = supabaseDbService.subscribeToRealtime('teachers', () => {
-      fetchLiveSupabaseData();
-    });
+    // 5. Debounced Realtime Teachers & Batches & Profiles Sync (Prevents duplicate fetches)
+    let syncTimeout = null;
+    const debouncedSync = () => {
+      if (syncTimeout) clearTimeout(syncTimeout);
+      syncTimeout = setTimeout(() => {
+        fetchLiveSupabaseData();
+      }, 1200);
+    };
 
-    const unsubProfiles = supabaseDbService.subscribeToRealtime('profiles', () => {
-      fetchLiveSupabaseData();
-    });
-
-    const unsubBatches = supabaseDbService.subscribeToRealtime('batches', () => {
-      fetchLiveSupabaseData();
-    });
+    const unsubTeachers = supabaseDbService.subscribeToRealtime('teachers', debouncedSync);
+    const unsubProfiles = supabaseDbService.subscribeToRealtime('profiles', debouncedSync);
+    const unsubBatches = supabaseDbService.subscribeToRealtime('batches', debouncedSync);
 
     return () => {
+      if (syncTimeout) clearTimeout(syncTimeout);
       if (unsubSlips) unsubSlips();
       if (unsubAttendance) unsubAttendance();
       if (unsubLessons) unsubLessons();

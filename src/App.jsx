@@ -1,21 +1,32 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Navbar } from './components/common/Navbar';
 import { Sidebar } from './components/common/Sidebar';
 import { LandingPage } from './components/landing/LandingPage';
-import { TeacherDashboard } from './components/teacher/TeacherDashboard';
-import { StudentPortal } from './components/student/StudentPortal';
-import { AttendanceScannerTerminal } from './components/scanner/AttendanceScannerTerminal';
-import { SuperAdminDashboard } from './components/admin/SuperAdminDashboard';
-import { AdminLoginPage } from './components/admin/AdminLoginPage';
-import { AuthPage } from './components/auth/AuthPage';
 import { AuthModal } from './components/auth/AuthModal';
-import { TeacherPlanCheckoutModal } from './components/auth/TeacherPlanCheckoutModal';
-import { FeePaymentModal } from './components/student/FeePaymentModal';
-import { DigitalStudentCard } from './components/student/DigitalStudentCard';
-import { TeacherLoginPage } from './components/auth/TeacherLoginPage';
 import { CheckCircle2, AlertCircle, Info, GraduationCap, ShieldCheck } from 'lucide-react';
 import { sound } from './utils/soundEffects';
+
+// Lazy-loaded portals & secondary views for ultra-fast initial landing load
+const TeacherDashboard = lazy(() => import('./components/teacher/TeacherDashboard').then(m => ({ default: m.TeacherDashboard })));
+const StudentPortal = lazy(() => import('./components/student/StudentPortal').then(m => ({ default: m.StudentPortal })));
+const AttendanceScannerTerminal = lazy(() => import('./components/scanner/AttendanceScannerTerminal').then(m => ({ default: m.AttendanceScannerTerminal })));
+const SuperAdminDashboard = lazy(() => import('./components/admin/SuperAdminDashboard').then(m => ({ default: m.SuperAdminDashboard })));
+const AdminLoginPage = lazy(() => import('./components/admin/AdminLoginPage').then(m => ({ default: m.AdminLoginPage })));
+const AuthPage = lazy(() => import('./components/auth/AuthPage').then(m => ({ default: m.AuthPage })));
+const TeacherLoginPage = lazy(() => import('./components/auth/TeacherLoginPage').then(m => ({ default: m.TeacherLoginPage })));
+const TeacherPlanCheckoutModal = lazy(() => import('./components/auth/TeacherPlanCheckoutModal').then(m => ({ default: m.TeacherPlanCheckoutModal })));
+const FeePaymentModal = lazy(() => import('./components/student/FeePaymentModal').then(m => ({ default: m.FeePaymentModal })));
+const DigitalStudentCard = lazy(() => import('./components/student/DigitalStudentCard').then(m => ({ default: m.DigitalStudentCard })));
+
+const PortalLoadingFallback = () => (
+  <div className="flex items-center justify-center min-h-[420px] w-full py-16 animate-in fade-in duration-200">
+    <div className="flex flex-col items-center gap-3 p-8 bg-white/80 backdrop-blur rounded-3xl border border-slate-200 shadow-sm">
+      <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+      <span className="text-xs font-bold text-slate-600">Loading Portal...</span>
+    </div>
+  </div>
+);
 
 const AppContent = () => {
   const { 
@@ -54,28 +65,30 @@ const AppContent = () => {
       <Navbar />
 
       {/* 3. Main Workspace Layout */}
-      {isDashboardRole ? (
-        <div className="flex-1 flex flex-col md:flex-row max-w-7xl w-full mx-auto">
-          {/* Persistent LMS Left Sidebar (desktop) & Mobile Tab Bar (mobile) */}
-          <Sidebar />
+      <Suspense fallback={<PortalLoadingFallback />}>
+        {isDashboardRole ? (
+          <div className="flex-1 flex flex-col md:flex-row max-w-7xl w-full mx-auto">
+            {/* Persistent LMS Left Sidebar (desktop) & Mobile Tab Bar (mobile) */}
+            <Sidebar />
 
-          {/* Main Portal View */}
-          <main className="flex-1 p-3.5 sm:p-6 lg:p-8 overflow-y-auto w-full max-w-full">
-            {currentRole === 'teacher' && <TeacherDashboard />}
-            {currentRole === 'student' && <StudentPortal />}
+            {/* Main Portal View */}
+            <main className="flex-1 p-3.5 sm:p-6 lg:p-8 overflow-y-auto w-full max-w-full">
+              {currentRole === 'teacher' && <TeacherDashboard />}
+              {currentRole === 'student' && <StudentPortal />}
+            </main>
+          </div>
+        ) : (
+          <main className="flex-1">
+            {currentRole === 'landing' && <LandingPage />}
+            {currentRole === 'auth' && <AuthPage />}
+            {currentRole === 'teacher-login' && <TeacherLoginPage />}
+            {currentRole === 'scanner' && <AttendanceScannerTerminal />}
+            {currentRole === 'admin' && (
+              isAdminAuthenticated ? <SuperAdminDashboard /> : <AdminLoginPage />
+            )}
           </main>
-        </div>
-      ) : (
-        <main className="flex-1">
-          {currentRole === 'landing' && <LandingPage />}
-          {currentRole === 'auth' && <AuthPage />}
-          {currentRole === 'teacher-login' && <TeacherLoginPage />}
-          {currentRole === 'scanner' && <AttendanceScannerTerminal />}
-          {currentRole === 'admin' && (
-            isAdminAuthenticated ? <SuperAdminDashboard /> : <AdminLoginPage />
-          )}
-        </main>
-      )}
+        )}
+      </Suspense>
 
       {/* 4. Global Toast Notification */}
       {toast && (

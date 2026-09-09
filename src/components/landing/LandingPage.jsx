@@ -30,27 +30,27 @@ import { AnimatedSection } from '../common/AnimatedSection';
 
 const HERO_SLIDES = [
   {
-    url: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1600&auto=format&fit=crop&q=80",
+    url: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=900&auto=format&fit=crop&q=65",
     stream: "📐 Combined Mathematics",
     tagline: "Integral Calculus & Pure Theory Masterclass"
   },
   {
-    url: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=1600&auto=format&fit=crop&q=80",
+    url: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=900&auto=format&fit=crop&q=65",
     stream: "⚡ Advanced Physics",
     tagline: "Mechanics, Electricity & Quantum Theory Lab"
   },
   {
-    url: "https://images.unsplash.com/photo-1507668077129-56e32842fceb?w=1600&auto=format&fit=crop&q=80",
+    url: "https://images.unsplash.com/photo-1507668077129-56e32842fceb?w=900&auto=format&fit=crop&q=65",
     stream: "🧪 Chemistry Faculty",
     tagline: "Organic Syntheses & Physical Energetics"
   },
   {
-    url: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1600&auto=format&fit=crop&q=80",
+    url: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=900&auto=format&fit=crop&q=65",
     stream: "💻 A/L ICT & Computing",
     tagline: "Python Programming, Logic Gates & Databases"
   },
   {
-    url: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1600&auto=format&fit=crop&q=80",
+    url: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=900&auto=format&fit=crop&q=65",
     stream: "🏢 Hall Gate QR Terminal",
     tagline: "Automated Student Entrance & Fee Pass Verification"
   }
@@ -174,6 +174,9 @@ export const LandingPage = () => {
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         {HERO_SLIDES.map((slide, idx) => {
           const isActive = idx === activeBgIndex || (idx === slideIndex && activeBgIndex === 0);
+          const shouldRender = idx === 0 || isActive || Math.abs(idx - (activeBgIndex || slideIndex)) <= 1;
+          if (!shouldRender) return null;
+
           return (
             <div
               key={idx}
@@ -184,6 +187,8 @@ export const LandingPage = () => {
               <img
                 src={slide.url}
                 alt={slide.stream}
+                loading={idx === 0 ? "eager" : "lazy"}
+                decoding="async"
                 className="w-full h-full object-cover object-center filter brightness-105 contrast-100 saturate-110"
               />
             </div>
@@ -431,6 +436,8 @@ export const LandingPage = () => {
                         <img
                           src={ins.cover}
                           alt={ins.name}
+                          loading="lazy"
+                          decoding="async"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
@@ -459,6 +466,8 @@ export const LandingPage = () => {
                               <img
                                 src={ins.avatar}
                                 alt={ins.name}
+                                loading="lazy"
+                                decoding="async"
                                 className="w-11 h-11 rounded-xl object-cover border-2 border-white shadow-md"
                               />
                               <CheckCircle2 className="w-4 h-4 text-emerald-400 fill-white absolute -bottom-1 -right-1" />
@@ -598,7 +607,13 @@ export const LandingPage = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 pt-4">
               {instructors.map((ins) => (
                 <div key={ins.id} className="p-3.5 sm:p-5 rounded-2xl bg-[#F4F8FA] border border-[#E1EDF7] text-center space-y-2 sm:space-y-3 hover:border-[#8EC5FC] hover:shadow-md transition group">
-                  <img src={ins.avatar} alt={ins.name} className="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl object-cover mx-auto border-2 border-white shadow-sm group-hover:scale-105 transition" />
+                  <img 
+                    src={ins.avatar} 
+                    alt={ins.name} 
+                    loading="lazy"
+                    decoding="async"
+                    className="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl object-cover mx-auto border-2 border-white shadow-sm group-hover:scale-105 transition" 
+                  />
                   <div>
                     <h4 className="font-bold text-[#2C3E50] text-xs sm:text-sm truncate">{ins.name}</h4>
                     <div className="text-[11px] sm:text-xs text-[#357ABD] font-bold mt-0.5">{ins.subject}</div>
