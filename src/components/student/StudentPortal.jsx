@@ -20,7 +20,8 @@ import {
   Truck,
   MapPin,
   Download,
-  Camera
+  Camera,
+  Lock
 } from 'lucide-react';
 import { DigitalStudentCard } from './DigitalStudentCard';
 import { VideoClassroom } from './VideoClassroom';
@@ -656,9 +657,17 @@ export const StudentPortal = () => {
                         <span className="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">
                           {quiz.subject}
                         </span>
-                        <div className="flex items-center gap-1 text-xs text-slate-500 font-mono font-bold">
-                          <Clock className="w-3.5 h-3.5 text-amber-500" />
-                          <span>{quiz.durationMinutes} Minutes</span>
+                        <div className="flex items-center gap-2">
+                          {quiz.submitRequiredTime > 0 && (
+                            <span className="flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-lg">
+                              <Lock className="w-3 h-3 text-amber-600" />
+                              <span>Min {Math.max(0, quiz.durationMinutes - quiz.submitRequiredTime)}m required</span>
+                            </span>
+                          )}
+                          <div className="flex items-center gap-1 text-xs text-slate-500 font-mono font-bold">
+                            <Clock className="w-3.5 h-3.5 text-amber-500" />
+                            <span>{quiz.durationMinutes} Minutes</span>
+                          </div>
                         </div>
                       </div>
 

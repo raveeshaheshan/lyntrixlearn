@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { sound } from '../utils/soundEffects';
 import confetti from 'canvas-confetti';
 import { supabase, supabaseDbService, isSupabaseConfigured } from '../lib/supabaseClient';
+import { INITIAL_QUIZZES } from '../data/mockData';
 
 const AppContext = createContext();
 
@@ -112,7 +113,7 @@ export const AppProvider = ({ children }) => {
   const [lessons, setLessons] = useState([]);
   const [bankSlips, setBankSlips] = useState([]);
   const [attendanceLogs, setAttendanceLogs] = useState([]);
-  const [quizzes, setQuizzes] = useState([]);
+  const [quizzes, setQuizzes] = useState(INITIAL_QUIZZES || []);
   const [quizSubmissions, setQuizSubmissions] = useState([]);
 
   // ----------------------------------------------------

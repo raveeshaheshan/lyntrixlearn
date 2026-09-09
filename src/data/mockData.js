@@ -601,9 +601,12 @@ export const INITIAL_QUIZZES = [
     id: "quiz-km-integration",
     title: "Integration Speed Challenge & ILATE Technique (අනුකලනය)",
     subject: "Combined Mathematics",
-    batchId: "batch-km-2025-theory",
+    instructorId: "9e1c0212-6aa5-444e-aa37-f295e79f6e98",
+    batchId: "batch-kasunmaths-2026-theory",
     durationMinutes: 15,
     totalMarks: 50,
+    hasRequiredSubmitTime: true,
+    submitRequiredTime: 5,
     questions: [
       {
         id: "q1",

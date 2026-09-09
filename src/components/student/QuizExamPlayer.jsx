@@ -9,20 +9,81 @@ import {
   RotateCcw, 
   ArrowRight,
   Sparkles,
-  Volume2
+  Volume2,
+  Lock,
+  Save
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { sound } from '../../utils/soundEffects';
 
 export const QuizExamPlayer = () => {
-  const { activeQuiz, setActiveQuiz, submitQuizAnswers, showToast } = useApp();
+  const { activeQuiz, setActiveQuiz, submitQuizAnswers, showToast, currentStudent } = useApp();
 
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [flaggedQuestions, setFlaggedQuestions] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(activeQuiz ? activeQuiz.durationMinutes * 60 : 900);
   const [score, setScore] = useState(0);
+  const [draftLoaded, setDraftLoaded] = useState(false);
+  const [lastAutoSavedAt, setLastAutoSavedAt] = useState(null);
 
+  const storageKey = activeQuiz ? `lyntrix_quiz_draft_${activeQuiz.id}_${currentStudent?.id || 'guest'}` : null;
+
+  // 1. Restore auto-saved draft on mount or when activeQuiz changes
+  useEffect(() => {
+    if (!activeQuiz || !storageKey) return;
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === 'object') {
+          if (parsed.selectedAnswers && Object.keys(parsed.selectedAnswers).length > 0) {
+            setSelectedAnswers(parsed.selectedAnswers);
+          }
+          if (parsed.flaggedQuestions) {
+            setFlaggedQuestions(parsed.flaggedQuestions);
+          }
+          if (typeof parsed.timeLeft === 'number' && parsed.timeLeft > 0 && parsed.timeLeft <= activeQuiz.durationMinutes * 60) {
+            setTimeLeft(parsed.timeLeft);
+          }
+          if (parsed.lastSaved) {
+            setLastAutoSavedAt(parsed.lastSaved);
+          }
+          showToast("Restored your auto-saved answers & timer!", "info");
+        }
+      }
+    } catch (err) {
+      console.warn("Could not load auto-saved quiz draft:", err);
+    } finally {
+      setDraftLoaded(true);
+    }
+  }, [activeQuiz?.id, storageKey]);
+
+  // 2. Debounced auto-save to localStorage
+  useEffect(() => {
+    if (!draftLoaded || !activeQuiz || !storageKey || isSubmitted) return;
+
+    const saveTimer = setTimeout(() => {
+      try {
+        const payload = {
+          quizId: activeQuiz.id,
+          studentId: currentStudent?.id || 'guest',
+          selectedAnswers,
+          flaggedQuestions,
+          timeLeft,
+          lastSaved: Date.now()
+        };
+        localStorage.setItem(storageKey, JSON.stringify(payload));
+        setLastAutoSavedAt(payload.lastSaved);
+      } catch (err) {
+        console.warn("Auto-save failed:", err);
+      }
+    }, 250);
+
+    return () => clearTimeout(saveTimer);
+  }, [selectedAnswers, flaggedQuestions, timeLeft, draftLoaded, activeQuiz, storageKey, isSubmitted]);
+
+  // 3. Countdown timer
   useEffect(() => {
     if (!activeQuiz || isSubmitted) return;
 
@@ -30,7 +91,7 @@ export const QuizExamPlayer = () => {
       setTimeLeft(prev => {
         if (prev <= 1) {
           clearInterval(timer);
-          handleSubmitQuiz();
+          handleSubmitQuiz(true);
           return 0;
         }
         return prev - 1;
@@ -41,6 +102,15 @@ export const QuizExamPlayer = () => {
   }, [activeQuiz, isSubmitted, selectedAnswers]);
 
   if (!activeQuiz) return null;
+
+  // Submit lockout calculation:
+  // Teacher sets submitRequiredTime in minutes.
+  // Example: 60 min paper with 20 min required time -> student cannot submit until timeLeft <= 20*60 (last 20 mins).
+  const requiredThresholdSec = (Number(activeQuiz.submitRequiredTime) || 0) * 60;
+  const isEarlySubmitLocked = !isSubmitted && requiredThresholdSec > 0 && timeLeft > requiredThresholdSec;
+  const remainingToUnlockSec = Math.max(0, timeLeft - requiredThresholdSec);
+  const unlockMins = Math.floor(remainingToUnlockSec / 60);
+  const unlockSecs = remainingToUnlockSec % 60;
 
   const toggleFlagQuestion = (questionId) => {
     setFlaggedQuestions(prev => ({
@@ -59,7 +129,20 @@ export const QuizExamPlayer = () => {
     }));
   };
 
-  const handleSubmitQuiz = () => {
+  const handleSubmitQuiz = (isAutoSubmit = false) => {
+    if (!isAutoSubmit && isEarlySubmitLocked) {
+      sound.playClick();
+      showToast(`Submission locked! Early submit unlocks in ${unlockMins}m ${unlockSecs.toString().padStart(2, '0')}s (in the final ${activeQuiz.submitRequiredTime} min window).`, 'error');
+      return;
+    }
+
+    // Clear auto-saved draft
+    if (storageKey) {
+      try {
+        localStorage.removeItem(storageKey);
+      } catch (e) {}
+    }
+
     let calculatedScore = 0;
     activeQuiz.questions.forEach((q) => {
       if (selectedAnswers[q.id] === q.correctIndex) {
@@ -93,6 +176,11 @@ export const QuizExamPlayer = () => {
   };
 
   const handleResetQuiz = () => {
+    if (storageKey) {
+      try {
+        localStorage.removeItem(storageKey);
+      } catch (e) {}
+    }
     setSelectedAnswers({});
     setFlaggedQuestions({});
     setIsSubmitted(false);
@@ -117,6 +205,17 @@ export const QuizExamPlayer = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Auto-Save Indicator */}
+            {!isSubmitted && (
+              <div 
+                title="All selected answers and progress are automatically saved" 
+                className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-emerald-700 shadow-xs"
+              >
+                <Save className="w-3.5 h-3.5 text-emerald-600" />
+                <span className="hidden sm:inline">Auto-Saved</span>
+              </div>
+            )}
+
             {!isSubmitted && (
               <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 px-3.5 py-1.5 rounded-xl text-blue-700 font-mono text-sm font-bold shadow-inner">
                 <Clock className="w-4 h-4 text-amber-500 animate-pulse" />
@@ -131,6 +230,36 @@ export const QuizExamPlayer = () => {
             </button>
           </div>
         </div>
+
+        {/* Early Submission Lockout Notice */}
+        {!isSubmitted && requiredThresholdSec > 0 && (
+          isEarlySubmitLocked ? (
+            <div className="p-3.5 bg-amber-50/90 border border-amber-200/90 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 shadow-xs">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
+                  <Lock className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-amber-950">Minimum Exam Time Enforced</div>
+                  <div className="text-[11px] text-amber-800">
+                    Early submission is locked. Submissions unlock during the final <strong>{activeQuiz.submitRequiredTime} minutes</strong>.
+                  </div>
+                </div>
+              </div>
+              <div className="bg-amber-200/60 border border-amber-300/80 px-3 py-1.5 rounded-xl font-mono text-xs font-bold text-amber-950 shrink-0 flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-amber-700" />
+                <span>Unlocks in {unlockMins}m {unlockSecs.toString().padStart(2, '0')}s</span>
+              </div>
+            </div>
+          ) : (
+            <div className="p-3 bg-emerald-50/90 border border-emerald-200 rounded-2xl flex items-center gap-2.5 text-xs text-emerald-900 shadow-xs">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <div>
+                <span className="font-bold">Submit Window Open:</span> You are now in the final {activeQuiz.submitRequiredTime} minutes. You may review your answers and submit whenever you are ready!
+              </div>
+            </div>
+          )
+        )}
 
         {/* Question Navigator Grid */}
         <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
@@ -289,10 +418,33 @@ export const QuizExamPlayer = () => {
               <RotateCcw className="w-4 h-4" />
               <span>Retry Test</span>
             </button>
+          ) : isEarlySubmitLocked ? (
+            <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 ml-auto">
+              <div className="text-right hidden sm:block">
+                <div className="text-[11px] font-bold text-amber-800 flex items-center gap-1 justify-end">
+                  <Lock className="w-3.5 h-3.5 text-amber-600" />
+                  <span>Early Submit Locked</span>
+                </div>
+                <div className="text-[10px] text-slate-500 font-mono">
+                  Unlocks in {unlockMins}m {unlockSecs.toString().padStart(2, '0')}s (Last {activeQuiz.submitRequiredTime}m)
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  sound.playClick();
+                  showToast(`Submission locked until the final ${activeQuiz.submitRequiredTime} minutes (in ${unlockMins}m ${unlockSecs.toString().padStart(2, '0')}s).`, "info");
+                }}
+                className="px-6 py-3 bg-slate-100 border border-slate-300 text-slate-500 hover:bg-slate-200 rounded-xl text-xs font-bold flex items-center gap-2 cursor-not-allowed select-none shadow-inner transition"
+              >
+                <Lock className="w-4 h-4 text-amber-600" />
+                <span>Submit Locked ({unlockMins}:{unlockSecs.toString().padStart(2, '0')})</span>
+              </button>
+            </div>
           ) : (
             <button
-              onClick={handleSubmitQuiz}
-              className="px-8 py-3 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-md shadow-emerald-500/20 transition ml-auto"
+              onClick={() => handleSubmitQuiz(false)}
+              className="px-8 py-3 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-md shadow-emerald-500/20 transition ml-auto active:scale-95"
             >
               <span>Submit & View Marks</span>
               <ArrowRight className="w-4 h-4" />

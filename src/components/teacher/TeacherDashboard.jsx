@@ -27,7 +27,8 @@ import {
   UserPlus,
   Zap,
   Camera,
-  Volume2
+  Volume2,
+  Lock
 } from 'lucide-react';
 import { TeacherSubscriptionModal } from './TeacherSubscriptionModal';
 import { CourseCreationWizardModal } from './CourseCreationWizardModal';
@@ -79,6 +80,8 @@ export const TeacherDashboard = () => {
     batchId: currentTeacher.batches[0]?.id || '',
     durationMinutes: 15,
     totalMarks: 50,
+    hasRequiredSubmitTime: false,
+    submitRequiredTime: 5,
     questions: [
       {
         id: 'q1',
@@ -137,6 +140,8 @@ export const TeacherDashboard = () => {
       batchId: newQuizForm.batchId || currentTeacher.batches[0]?.id,
       durationMinutes: Number(newQuizForm.durationMinutes) || 15,
       totalMarks: Number(newQuizForm.totalMarks) || 50,
+      hasRequiredSubmitTime: Boolean(newQuizForm.hasRequiredSubmitTime),
+      submitRequiredTime: newQuizForm.hasRequiredSubmitTime ? (Number(newQuizForm.submitRequiredTime) || 0) : 0,
       questions: validQuestions
     });
 
@@ -146,13 +151,16 @@ export const TeacherDashboard = () => {
       batchId: currentTeacher.batches[0]?.id || '',
       durationMinutes: 15,
       totalMarks: 50,
+      hasRequiredSubmitTime: false,
+      submitRequiredTime: 5,
       questions: [
         {
           id: 'q1',
           question: '',
           options: ['', '', '', ''],
           correctIndex: 0,
-          explanation: ''
+          explanation: '',
+          audioUrl: ''
         }
       ]
     });
@@ -1076,9 +1084,17 @@ export const TeacherDashboard = () => {
                         <span className="text-xs font-bold text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200">
                           {quiz.subject}
                         </span>
-                        <div className="flex items-center gap-1 text-xs text-slate-500 font-mono font-bold">
-                          <Clock className="w-3.5 h-3.5 text-amber-500" />
-                          <span>{quiz.durationMinutes} Mins</span>
+                        <div className="flex items-center gap-2">
+                          {quiz.submitRequiredTime > 0 && (
+                            <span className="flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md">
+                              <Lock className="w-3 h-3 text-amber-600" />
+                              <span>Lock: Final {quiz.submitRequiredTime}m</span>
+                            </span>
+                          )}
+                          <div className="flex items-center gap-1 text-xs text-slate-500 font-mono font-bold">
+                            <Clock className="w-3.5 h-3.5 text-amber-500" />
+                            <span>{quiz.durationMinutes} Mins</span>
+                          </div>
                         </div>
                       </div>
 
@@ -1460,6 +1476,67 @@ export const TeacherDashboard = () => {
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-mono"
                   />
                 </div>
+              </div>
+
+              {/* Submit Required Time Lock Option */}
+              <div className="p-3.5 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-2xl space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={newQuizForm.hasRequiredSubmitTime}
+                      onChange={(e) => setNewQuizForm({ 
+                        ...newQuizForm, 
+                        hasRequiredSubmitTime: e.target.checked,
+                        submitRequiredTime: e.target.checked ? (newQuizForm.submitRequiredTime || Math.min(20, Math.floor((Number(newQuizForm.durationMinutes) || 15) / 2))) : 0
+                      })}
+                      className="w-4 h-4 rounded text-purple-600 focus:ring-purple-500 border-slate-300 cursor-pointer"
+                    />
+                    <span className="text-xs font-bold text-purple-950 flex items-center gap-1.5">
+                      <Lock className="w-3.5 h-3.5 text-purple-700" />
+                      Set Submit Required Time Window (අවම කාල සීමාවක් අගුලු ලෑම)
+                    </span>
+                  </label>
+                  <span className="text-[10px] font-bold text-purple-700 bg-purple-100/80 px-2 py-0.5 rounded-md border border-purple-200">
+                    Optional
+                  </span>
+                </div>
+
+                {newQuizForm.hasRequiredSubmitTime && (
+                  <div className="pt-2 border-t border-purple-200/70 space-y-2.5">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                      <div className="flex items-center gap-2">
+                        <label className="text-xs font-bold text-slate-700 whitespace-nowrap">
+                          Submit Required Time (Minutes):
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          max={Math.max(1, (Number(newQuizForm.durationMinutes) || 15) - 1)}
+                          value={newQuizForm.submitRequiredTime}
+                          onChange={(e) => setNewQuizForm({ ...newQuizForm, submitRequiredTime: e.target.value })}
+                          className="w-24 bg-white border border-purple-300 rounded-xl px-3 py-1.5 text-xs text-slate-900 font-mono font-bold text-center focus:ring-2 focus:ring-purple-400 focus:outline-none"
+                        />
+                      </div>
+                      <span className="text-[11px] text-purple-900 font-semibold">
+                        (Submit opens only during the last {newQuizForm.submitRequiredTime || 0} minutes)
+                      </span>
+                    </div>
+
+                    {/* Dynamic Calculation Summary */}
+                    <div className="p-3 bg-white/90 rounded-xl border border-purple-200 text-xs text-purple-950 space-y-1 shadow-2xs">
+                      <div className="font-bold flex items-center gap-1.5 text-purple-900">
+                        <Clock className="w-3.5 h-3.5 text-amber-500" />
+                        <span>කාල සීමා ගණනය කිරීම (Formula Preview):</span>
+                      </div>
+                      <p className="text-slate-700 text-[11px] leading-relaxed">
+                        Total paper time: <strong className="text-slate-900">{newQuizForm.durationMinutes} min</strong>. 
+                        Required final window: <strong className="text-purple-700">{newQuizForm.submitRequiredTime} min</strong>. 
+                        Students <strong>must spend at least {Math.max(0, (Number(newQuizForm.durationMinutes) || 0) - (Number(newQuizForm.submitRequiredTime) || 0))} minutes</strong> on the paper; submit button remains locked until the last <strong>{newQuizForm.submitRequiredTime} minutes</strong> remain.
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Dynamic Questions Builder */}
