@@ -26,7 +26,6 @@ import {
 import { DigitalStudentCard } from './DigitalStudentCard';
 import { VideoClassroom } from './VideoClassroom';
 import { FeePaymentModal } from './FeePaymentModal';
-import { QuizExamPlayer } from './QuizExamPlayer';
 import { CourseCompletionModal } from './CourseCompletionModal';
 import { ProfileAvatarModal } from '../common/ProfileAvatarModal';
 
@@ -819,7 +818,6 @@ export const StudentPortal = () => {
       <DigitalStudentCard />
       <VideoClassroom />
       <FeePaymentModal />
-      <QuizExamPlayer />
       <CourseCompletionModal isOpen={showCertModal} onClose={() => setShowCertModal(false)} />
       <ProfileAvatarModal
         isOpen={showAvatarModal}
