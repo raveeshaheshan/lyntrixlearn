@@ -7,6 +7,8 @@ import {
   Volume2, 
   VolumeX, 
   Maximize, 
+  Minimize,
+  Gauge,
   ShieldAlert, 
   FileText, 
   Download, 
@@ -29,28 +31,67 @@ export const VideoClassroom = () => {
   } = useApp();
 
   const videoRef = useRef(null);
+  const playerContainerRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [activeTab, setActiveTab] = useState('chapters');
   const [userNotes, setUserNotes] = useState('');
+
+  // 🛡️ FAINT DYNAMIC MOVING WATERMARK (Phone Number & Student ID Number, every 10 seconds)
+  const [watermarkVisible, setWatermarkVisible] = useState(false);
+  const [watermarkPos, setWatermarkPos] = useState({ top: '35%', left: '40%' });
+
+  useEffect(() => {
+    // Initial display
+    const initialTimer = setTimeout(() => {
+      setWatermarkVisible(true);
+      setTimeout(() => setWatermarkVisible(false), 3500);
+    }, 1500);
+
+    // Trigger every 10 seconds
+    const interval = setInterval(() => {
+      // Random coordinates across video canvas
+      const randomTop = Math.floor(Math.random() * 65 + 15);
+      const randomLeft = Math.floor(Math.random() * 55 + 15);
+      setWatermarkPos({ top: `${randomTop}%`, left: `${randomLeft}%` });
+
+      // Fade in faintly
+      setWatermarkVisible(true);
+
+      // Fade out after 3.5 seconds
+      setTimeout(() => {
+        setWatermarkVisible(false);
+      }, 3500);
+    }, 10000);
+
+    return () => {
+      clearTimeout(initialTimer);
+      clearInterval(interval);
+    };
+  }, []);
+
+  // Fullscreen event listener
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+    };
+  }, []);
 
   // 🛡️ NETFLIX-GRADE ANTI-PIRACY & HARDWARE DRM DEFENSE ENGINE
   const [isBlackedOut, setIsBlackedOut] = useState(false);
   const [blackoutReason, setBlackoutReason] = useState('');
   const [drmEnabled, setDrmEnabled] = useState(true);
   const [clientIp] = useState('175.157.192.4');
-  const [realtimeClock, setRealtimeClock] = useState(new Date().toLocaleTimeString());
-
-  // Realtime clock ticker for burned-in watermark timestamp
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setRealtimeClock(new Date().toLocaleTimeString());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   // Anti-Screen Recording & Screenshot Intercept System
   useEffect(() => {
@@ -148,10 +189,40 @@ export const VideoClassroom = () => {
     }
   };
 
+  const speedOptions = [0.75, 1, 1.25, 1.5, 2];
+
   const changeSpeed = (speed) => {
     setPlaybackSpeed(speed);
     if (videoRef.current) {
       videoRef.current.playbackRate = speed;
+    }
+    showToast(`Playback speed: ${speed}x`, "info");
+  };
+
+  const cycleSpeed = () => {
+    const currentIdx = speedOptions.indexOf(playbackSpeed);
+    const nextIdx = (currentIdx + 1) % speedOptions.length;
+    changeSpeed(speedOptions[nextIdx]);
+  };
+
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        const target = playerContainerRef.current || videoRef.current;
+        if (target?.requestFullscreen) {
+          await target.requestFullscreen();
+        } else if (target?.webkitRequestFullscreen) {
+          await target.webkitRequestFullscreen();
+        }
+        setIsFullscreen(true);
+      } else {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        }
+        setIsFullscreen(false);
+      }
+    } catch (err) {
+      console.warn("Fullscreen toggle error:", err);
     }
   };
 
@@ -213,10 +284,11 @@ export const VideoClassroom = () => {
         {/* Left: Video Area */}
         <div className="lg:col-span-8 space-y-4">
           <div 
+            ref={playerContainerRef}
             onContextMenu={(e) => e.preventDefault()}
-            className="relative rounded-3xl overflow-hidden bg-black border border-slate-800 shadow-2xl aspect-video group select-none"
+            className="relative rounded-3xl overflow-hidden bg-black border border-slate-800 shadow-2xl aspect-video group select-none flex items-center justify-center"
           >
-            {/* BLACKOUT SCREEN PROTECTION OVERLAY (Triggers on Screen Record / Blur / PrtScn) */}
+            {/* BLACKOUT SCREEN PROTECTION OVERLAY */}
             {isBlackedOut ? (
               <div className="absolute inset-0 z-40 bg-black flex flex-col items-center justify-center p-6 text-center space-y-4 animate-in fade-in select-none">
                 <div className="w-16 h-16 rounded-full bg-rose-500/10 border-2 border-rose-500 text-rose-500 flex items-center justify-center shadow-[0_0_30px_rgba(244,63,94,0.3)] animate-pulse">
@@ -259,7 +331,10 @@ export const VideoClassroom = () => {
                   playsInline
                   onContextMenu={(e) => e.preventDefault()}
                   onTimeUpdate={() => setCurrentTime(videoRef.current?.currentTime || 0)}
-                  onLoadedMetadata={() => setDuration(videoRef.current?.duration || 0)}
+                  onLoadedMetadata={() => {
+                    setDuration(videoRef.current?.duration || 0);
+                    if (videoRef.current) videoRef.current.playbackRate = playbackSpeed;
+                  }}
                   onPlay={() => setIsPlaying(true)}
                   onPause={() => setIsPlaying(false)}
                   className="w-full h-full object-contain pointer-events-auto cursor-pointer"
@@ -276,25 +351,21 @@ export const VideoClassroom = () => {
                   </button>
                 )}
 
-                {/* 1. DYNAMIC FLOATING WATERMARK */}
-                <div className="absolute animate-watermark bg-black/85 backdrop-blur-md border border-white/30 px-3 py-1.5 rounded-xl text-white font-mono text-[11px] pointer-events-none select-none shadow-2xl z-20">
-                  <div className="flex items-center gap-1.5 font-bold">
-                    <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
-                    <span>{currentStudent.name}</span>
+                {/* 🛡️ FAINT MOVING ANTI-PIRACY WATERMARK (Phone Number & Student ID Number - Appears lightly every 10s) */}
+                <div
+                  style={{
+                    top: watermarkPos.top,
+                    left: watermarkPos.left,
+                  }}
+                  className={`absolute pointer-events-none select-none z-30 transition-all duration-1000 transform ${
+                    watermarkVisible ? 'opacity-30 scale-100' : 'opacity-0 scale-95'
+                  }`}
+                >
+                  <div className="bg-black/45 backdrop-blur-[1px] px-3 py-1.5 rounded-xl text-white font-mono text-[11px] sm:text-xs font-bold tracking-wider border border-white/10 shadow-lg flex items-center gap-2">
+                    <span className="text-white/95">{currentStudent?.phone || '077 123 4567'}</span>
+                    <span className="text-white/40">•</span>
+                    <span className="text-cyan-300">{currentStudent?.indexNumber || 'LYN-26-8821'}</span>
                   </div>
-                  <div className="text-[9px] text-cyan-300 font-medium">
-                    {currentStudent.indexNumber} • IP: {clientIp}
-                  </div>
-                </div>
-
-                {/* 2. PERMANENT BURNED-IN TIMESTAMP WATERMARK STAMP (Bottom-Right) */}
-                <div className="absolute bottom-16 right-4 bg-black/80 backdrop-blur-sm border border-cyan-500/30 px-2.5 py-1 rounded-lg text-cyan-400 font-mono text-[10px] font-bold pointer-events-none select-none z-10 shadow-lg">
-                  <div>STUDENT ID: {currentStudent.indexNumber}</div>
-                  <div className="text-[9px] text-slate-400 font-medium">{realtimeClock} • IP: {clientIp}</div>
-                </div>
-
-                <div className="absolute top-3 right-3 bg-black/70 px-2.5 py-1 rounded-lg border border-white/10 text-[10px] font-mono text-slate-300 pointer-events-none z-10">
-                  🔒 Netflix-Grade Hardware DRM Protected
                 </div>
               </>
             )}
@@ -334,25 +405,43 @@ export const VideoClassroom = () => {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1 bg-slate-900/80 px-2 py-0.5 rounded-lg border border-slate-700 text-[11px] font-mono">
-                    {[1, 1.25, 1.5, 2].map((spd) => (
-                      <button
-                        key={spd}
-                        onClick={() => changeSpeed(spd)}
-                        className={`px-1.5 py-0.5 rounded ${playbackSpeed === spd ? 'bg-blue-600 text-white font-bold' : 'text-slate-400 hover:text-white'}`}
-                      >
-                        {spd}x
-                      </button>
-                    ))}
+                  {/* Playback Speed Controls */}
+                  <div className="flex items-center bg-slate-900/90 rounded-xl p-0.5 border border-slate-700">
+                    <button
+                      type="button"
+                      onClick={cycleSpeed}
+                      className="px-2 py-1 text-[11px] font-mono font-bold text-blue-400 hover:text-white transition flex items-center gap-1"
+                      title="Click to cycle speed"
+                    >
+                      <Gauge className="w-3.5 h-3.5" />
+                      <span>{playbackSpeed}x</span>
+                    </button>
+                    <div className="hidden sm:flex items-center gap-0.5 border-l border-slate-700 pl-1 pr-0.5">
+                      {speedOptions.map((spd) => (
+                        <button
+                          key={spd}
+                          type="button"
+                          onClick={() => changeSpeed(spd)}
+                          className={`px-1.5 py-0.5 rounded text-[10px] font-mono transition ${
+                            playbackSpeed === spd
+                              ? 'bg-blue-600 text-white font-bold shadow-xs'
+                              : 'text-slate-400 hover:text-white'
+                          }`}
+                        >
+                          {spd}x
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
+                  {/* Fullscreen Maximize / Minimize Button */}
                   <button
-                    onClick={() => {
-                      if (videoRef.current?.requestFullscreen) videoRef.current.requestFullscreen();
-                    }}
-                    className="p-1 hover:text-blue-400 transition"
+                    type="button"
+                    onClick={toggleFullscreen}
+                    className="p-1.5 rounded-lg hover:bg-white/10 text-white hover:text-blue-400 transition"
+                    title={isFullscreen ? "Exit Fullscreen" : "Fullscreen (Maximize)"}
                   >
-                    <Maximize className="w-4 h-4" />
+                    {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
                   </button>
                 </div>
               </div>

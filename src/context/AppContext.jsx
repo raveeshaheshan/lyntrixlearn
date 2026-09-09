@@ -1068,6 +1068,22 @@ export const AppProvider = ({ children }) => {
     showToast("Live Scheduled Class Zoom Link updated successfully!", "success");
   };
 
+  const updateStudentAvatar = (avatarUrl) => {
+    if (!avatarUrl) return;
+    setCurrentStudent(prev => ({ ...prev, avatar: avatarUrl }));
+    setStudents(prev => prev.map(s => s.id === currentStudent.id ? { ...s, avatar: avatarUrl } : s));
+    sound.playChimeApproved();
+    showToast("Profile picture updated successfully!", "success");
+  };
+
+  const updateTeacherAvatar = (avatarUrl) => {
+    if (!avatarUrl) return;
+    setCurrentTeacher(prev => ({ ...prev, avatar: avatarUrl }));
+    setInstructors(prev => prev.map(ins => ins.id === currentTeacher.id ? { ...ins, avatar: avatarUrl } : ins));
+    sound.playChimeApproved();
+    showToast("Teacher profile photo updated successfully!", "success");
+  };
+
   const switchRole = (role) => {
     sound.playClick();
     setCurrentRole(role);
@@ -1153,6 +1169,8 @@ export const AppProvider = ({ children }) => {
         setSelectedCheckoutPlan,
         openPlanCheckout,
         registerTeacherSaaS,
+        updateStudentAvatar,
+        updateTeacherAvatar,
         platformMetrics
       }}
     >

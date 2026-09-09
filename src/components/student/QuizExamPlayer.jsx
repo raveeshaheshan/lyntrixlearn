@@ -8,7 +8,8 @@ import {
   Award, 
   RotateCcw, 
   ArrowRight,
-  Sparkles
+  Sparkles,
+  Volume2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { sound } from '../../utils/soundEffects';
@@ -215,6 +216,21 @@ export const QuizExamPlayer = () => {
                     </div>
                   )}
                 </div>
+
+                {/* Audio Question / Listening Comprehension Track */}
+                {q.audioUrl && (
+                  <div className="p-3 bg-gradient-to-r from-purple-50 via-indigo-50 to-blue-50 rounded-xl border border-purple-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+                    <div className="flex items-center gap-2 text-xs font-bold text-purple-950">
+                      <div className="w-6 h-6 rounded-lg bg-purple-200 text-purple-800 flex items-center justify-center shrink-0">
+                        <Volume2 className="w-3.5 h-3.5 animate-pulse" />
+                      </div>
+                      <span>Listen to Audio Track / Listening Clue:</span>
+                    </div>
+                    <audio controls src={q.audioUrl} className="h-8 max-w-sm w-full outline-none">
+                      Your browser does not support audio playback.
+                    </audio>
+                  </div>
+                )}
 
                 {/* MCQ Options */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">

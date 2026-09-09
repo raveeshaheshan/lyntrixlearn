@@ -19,13 +19,15 @@ import {
   Package,
   Truck,
   MapPin,
-  Download
+  Download,
+  Camera
 } from 'lucide-react';
 import { DigitalStudentCard } from './DigitalStudentCard';
 import { VideoClassroom } from './VideoClassroom';
 import { FeePaymentModal } from './FeePaymentModal';
 import { QuizExamPlayer } from './QuizExamPlayer';
 import { CourseCompletionModal } from './CourseCompletionModal';
+import { ProfileAvatarModal } from '../common/ProfileAvatarModal';
 
 export const StudentPortal = () => {
   const { 
@@ -41,11 +43,13 @@ export const StudentPortal = () => {
     bankSlips,
     setPaymentModalData,
     setShowIdCardModal,
+    updateStudentAvatar,
     showToast
   } = useApp();
 
   const [lessonFilter, setLessonFilter] = useState('All');
   const [showCertModal, setShowCertModal] = useState(false);
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
 
   const studentSlips = bankSlips.filter(s => s.studentId === currentStudent.id);
 
@@ -59,11 +63,26 @@ export const StudentPortal = () => {
       <div className="bg-[#FFFFFF] rounded-2xl p-6 sm:p-7 border border-slate-200/80 shadow-sm relative overflow-hidden">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
           <div className="flex items-center gap-4">
-            <img
-              src={currentStudent.avatar}
-              alt={currentStudent.name}
-              className="w-16 h-16 sm:w-18 sm:h-18 rounded-xl object-cover border-2 border-[#0A2540] shadow-sm"
-            />
+            <div 
+              onClick={() => setShowAvatarModal(true)}
+              className="relative group cursor-pointer"
+              title="Click to change profile picture"
+            >
+              <img
+                src={currentStudent.avatar}
+                alt={currentStudent.name}
+                className="w-16 h-16 sm:w-18 sm:h-18 rounded-xl object-cover border-2 border-[#0A2540] shadow-sm group-hover:opacity-85 transition"
+              />
+              <div className="absolute inset-0 bg-black/40 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                <Camera className="w-5 h-5 text-white drop-shadow" />
+              </div>
+              <button
+                type="button"
+                className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-md border-2 border-white hover:bg-blue-700 transition"
+              >
+                <Camera className="w-3 h-3" />
+              </button>
+            </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold px-2.5 py-0.5 rounded bg-[#FAF9F6] text-[#0A2540] border border-slate-200">
@@ -699,6 +718,13 @@ export const StudentPortal = () => {
       <FeePaymentModal />
       <QuizExamPlayer />
       <CourseCompletionModal isOpen={showCertModal} onClose={() => setShowCertModal(false)} />
+      <ProfileAvatarModal
+        isOpen={showAvatarModal}
+        onClose={() => setShowAvatarModal(false)}
+        currentAvatar={currentStudent.avatar}
+        onSaveAvatar={updateStudentAvatar}
+        title="Update Student Profile Photo"
+      />
     </div>
   );
 };

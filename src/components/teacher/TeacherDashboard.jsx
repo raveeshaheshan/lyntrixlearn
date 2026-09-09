@@ -25,12 +25,16 @@ import {
   Award,
   BookOpen,
   UserPlus,
-  Zap
+  Zap,
+  Camera,
+  Volume2
 } from 'lucide-react';
 import { TeacherSubscriptionModal } from './TeacherSubscriptionModal';
 import { CourseCreationWizardModal } from './CourseCreationWizardModal';
 import { AssignmentGradingModal } from './AssignmentGradingModal';
 import { AddLessonModal } from './AddLessonModal';
+import { ProfileAvatarModal } from '../common/ProfileAvatarModal';
+import { R2FileUploader } from '../common/R2FileUploader';
 
 export const TeacherDashboard = () => {
   const { 
@@ -50,6 +54,7 @@ export const TeacherDashboard = () => {
     quizSubmissions,
     updateBatchLiveLink,
     setActiveLesson,
+    updateTeacherAvatar,
     showToast
   } = useApp();
 
@@ -62,6 +67,7 @@ export const TeacherDashboard = () => {
   const [selectedGradingSub, setSelectedGradingSub] = useState(null);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const [selectedSlipModal, setSelectedSlipModal] = useState(null);
+  const [showTeacherAvatarModal, setShowTeacherAvatarModal] = useState(false);
 
   // Live Scheduled Class Editor State
   const [selectedLiveBatchId, setSelectedLiveBatchId] = useState(currentTeacher.batches[0]?.id || '');
@@ -79,7 +85,8 @@ export const TeacherDashboard = () => {
         question: '',
         options: ['', '', '', ''],
         correctIndex: 0,
-        explanation: ''
+        explanation: '',
+        audioUrl: ''
       }
     ]
   });
@@ -161,7 +168,8 @@ export const TeacherDashboard = () => {
           question: '',
           options: ['', '', '', ''],
           correctIndex: 0,
-          explanation: ''
+          explanation: '',
+          audioUrl: ''
         }
       ]
     }));
@@ -283,11 +291,26 @@ export const TeacherDashboard = () => {
       <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-sm relative overflow-hidden">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
           <div className="flex items-center gap-4">
-            <img
-              src={currentTeacher.avatar}
-              alt={currentTeacher.name}
-              className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-emerald-500 shadow-md"
-            />
+            <div 
+              onClick={() => setShowTeacherAvatarModal(true)}
+              className="relative group cursor-pointer"
+              title="Click to update teacher profile photo"
+            >
+              <img
+                src={currentTeacher.avatar}
+                alt={currentTeacher.name}
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-emerald-500 shadow-md group-hover:opacity-85 transition"
+              />
+              <div className="absolute inset-0 bg-black/40 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                <Camera className="w-5 h-5 text-white drop-shadow" />
+              </div>
+              <button
+                type="button"
+                className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-md border-2 border-white hover:bg-emerald-700 transition"
+              >
+                <Camera className="w-3 h-3" />
+              </button>
+            </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
@@ -1470,6 +1493,49 @@ export const TeacherDashboard = () => {
                         className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-medium"
                       />
 
+                      {/* Audio Clue / Listening File Upload (Optional) */}
+                      <div className="bg-purple-50/60 p-3 rounded-xl border border-purple-200/80 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-purple-900 flex items-center gap-1.5">
+                            <Volume2 className="w-3.5 h-3.5 text-purple-600" />
+                            Audio Question / Listening Track (Optional):
+                          </span>
+                          {q.audioUrl && (
+                            <span className="text-[10px] text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded">
+                              ✓ Audio Attached
+                            </span>
+                          )}
+                        </div>
+
+                        {q.audioUrl && (
+                          <div className="p-2 bg-white rounded-lg border border-purple-200 flex items-center justify-between gap-2">
+                            <audio controls src={q.audioUrl} className="h-7 w-full max-w-sm" />
+                            <button
+                              type="button"
+                              onClick={() => handleUpdateQuestion(qIndex, 'audioUrl', '')}
+                              className="text-[11px] text-rose-600 font-bold hover:underline"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        )}
+
+                        <R2FileUploader
+                          folder="quiz-audio"
+                          accept="audio/*,.mp3,.wav,.m4a,.aac"
+                          label=""
+                          helperText="Upload audio track (.mp3 / .wav) to Cloudflare R2 for listening comprehension"
+                          maxSizeMB={30}
+                          currentUrl={q.audioUrl}
+                          onUploadSuccess={(res) => {
+                            if (res.url) {
+                              handleUpdateQuestion(qIndex, 'audioUrl', res.url);
+                              showToast('Audio track uploaded and attached to question!', 'success');
+                            }
+                          }}
+                        />
+                      </div>
+
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {q.options.map((opt, optIndex) => (
                           <div key={optIndex} className="flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200">
@@ -1547,6 +1613,15 @@ export const TeacherDashboard = () => {
       <AddLessonModal
         isOpen={showAddLessonModal}
         onClose={() => setShowAddLessonModal(false)}
+      />
+
+      {/* TEACHER PROFILE AVATAR MODAL */}
+      <ProfileAvatarModal
+        isOpen={showTeacherAvatarModal}
+        onClose={() => setShowTeacherAvatarModal(false)}
+        currentAvatar={currentTeacher.avatar}
+        onSaveAvatar={updateTeacherAvatar}
+        title="Update Teacher Profile Photo"
       />
     </div>
   );
