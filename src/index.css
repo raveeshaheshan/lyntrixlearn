@@ -4,87 +4,169 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ULTRA-MODERN HIGH-TECH ACADEMIC DESIGN SYSTEM (DEEP SPACE SLATE, ELECTRIC INDIGO & RADIANT EMERALD) */
+/* FRESH, CLEAN WHITE & SKY-BLUE DESIGN SYSTEM */
 :root {
-  --bg-space: #090D16;
-  --bg-space-card: #0F172A;
-  --indigo-electric: #6366F1;
-  --indigo-glow: rgba(99, 102, 241, 0.35);
-  --emerald-radiant: #10B981;
-  --emerald-glow: rgba(16, 185, 129, 0.35);
-  --rose-coral: #F43F5E;
-  --cyan-vibrant: #06B6D4;
+  /* Surface & Canvas Tokens */
+  --color-surface: #FFFFFF;             /* Main Background / Surface / Elevated Cards / Modals */
+  --color-canvas: #F4F8FA;              /* Secondary Background / App Canvas (reduces eye strain) */
+  --color-border: #E1EDF7;              /* Surface / Cards / Borders / Dividers */
+
+  /* Brand Interactive Tokens */
+  --color-primary: #8EC5FC;             /* Primary Brand / Interactive / Accent (Soft Sky Blue) */
+  --color-primary-hover: #6BA8E5;       /* Primary Action Hover / Focus (Vibrant Sky Blue) */
+  --color-primary-light: #E1EDF7;
+
+  /* Typography Tokens */
+  --color-text-primary: #2C3E50;        /* Primary Text / Headings (Deep Slate Navy) */
+  --color-text-secondary: #4A6572;      /* Secondary Text / Subtitles / Muted (Dusty Slate Blue) */
+
+  /* Shadows & Glows */
+  --shadow-card: 0 4px 20px -2px rgba(44, 62, 80, 0.04), 0 2px 6px -1px rgba(142, 197, 252, 0.12);
+  --shadow-card-hover: 0 12px 30px -4px rgba(44, 62, 80, 0.08), 0 4px 12px -2px rgba(107, 168, 229, 0.25);
+  --shadow-btn: 0 4px 14px 0 rgba(142, 197, 252, 0.45);
+  --shadow-btn-hover: 0 6px 20px 0 rgba(107, 168, 229, 0.55);
+  --focus-ring: 0 0 0 3px rgba(142, 197, 252, 0.45);
 }
 
 html, body {
   overflow-x: hidden !important;
   max-width: 100vw !important;
   width: 100% !important;
-  background-color: #090D16;
-  color: #F8FAFC;
+  background-color: var(--color-canvas);
+  color: var(--color-text-primary);
+  font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif;
 }
 
 #root {
   overflow-x: hidden !important;
   max-width: 100vw !important;
   width: 100% !important;
+  background-color: var(--color-canvas);
 }
 
 @layer base {
   * {
-    border-color: rgba(99, 102, 241, 0.2);
+    border-color: var(--color-border);
   }
 
   body {
-    background-color: #090D16;
-    color: #F8FAFC;
+    background-color: var(--color-canvas);
+    color: var(--color-text-primary);
     font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif;
     overflow-x: hidden !important;
   }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--color-text-primary);
+    font-weight: 800;
+  }
+
+  p, span, label {
+    color: inherit;
+  }
 }
 
-/* Glassmorphism Frosted Glass Panels */
-.glass-modern {
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(99, 102, 241, 0.25);
-  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.6);
-  border-radius: 1rem;
+/* ========================================================================= */
+/* COMPONENT UTILITY CLASSES (White & Sky-Blue Theme) */
+/* ========================================================================= */
+
+/* 1. Body & App Canvas */
+.app-canvas {
+  background-color: var(--color-canvas);
+  color: var(--color-text-primary);
 }
 
-.glass-glow-indigo {
-  background: rgba(99, 102, 241, 0.08);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(99, 102, 241, 0.4);
-  box-shadow: 0 0 30px rgba(99, 102, 241, 0.2);
-  border-radius: 1rem;
+/* 2. Elevated Cards */
+.card-ice {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 1.25rem;
+  box-shadow: var(--shadow-card);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.glass-glow-emerald {
-  background: rgba(16, 185, 129, 0.08);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(16, 185, 129, 0.4);
-  box-shadow: 0 0 30px rgba(16, 185, 129, 0.2);
-  border-radius: 1rem;
+.card-ice:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-card-hover);
 }
 
-.text-gradient-indigo {
-  background: linear-gradient(135deg, #FFFFFF 0%, #A5B4FC 50%, #6366F1 100%);
+/* 3. Primary Button */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-primary);
+  font-weight: 700;
+  border-radius: 0.875rem;
+  padding: 0.625rem 1.25rem;
+  box-shadow: var(--shadow-btn);
+  transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+  color: #FFFFFF;
+  box-shadow: var(--shadow-btn-hover);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0px);
+}
+
+/* 4. Outline / Ghost Button */
+.btn-outline {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  font-weight: 700;
+  border-radius: 0.875rem;
+  padding: 0.625rem 1.25rem;
+  transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-outline:hover {
+  border-color: var(--color-primary);
+  background-color: var(--color-canvas);
+  color: var(--color-primary-hover);
+  transform: translateY(-1px);
+}
+
+/* 5. Navigation Bar */
+.nav-glass {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 4px 20px -2px rgba(44, 62, 80, 0.04);
+}
+
+/* 6. Theme Badges */
+.badge-sky {
+  background-color: rgba(142, 197, 252, 0.2);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+}
+
+/* Text Gradients */
+.text-gradient-sky {
+  background: linear-gradient(135deg, #2C3E50 0%, #357ABD 50%, #6BA8E5 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.text-gradient-emerald {
-  background: linear-gradient(135deg, #FFFFFF 0%, #6EE7B7 50%, #10B981 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.text-gradient-coral {
-  background: linear-gradient(135deg, #FFFFFF 0%, #FDA4AF 50%, #F43F5E 100%);
+.text-gradient-navy {
+  background: linear-gradient(135deg, #1E2C3A 0%, #2C3E50 50%, #4A6572 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -102,21 +184,111 @@ html, body {
   animation: dynamicWatermark 18s ease-in-out infinite alternate;
 }
 
-/* Custom Clean Scrollbar */
+/* Custom Clean Sky Blue Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #090D16;
+  background: var(--color-canvas);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #6366F1;
+  background: var(--color-border);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #4F46E5;
+  background: var(--color-primary);
+}
+
+/* ========================================================================= */
+/* HEADLINE ANIMATIONS (Learn Smarter with Lyntrix LMS) */
+/* ========================================================================= */
+
+@keyframes textGradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-text-shimmer {
+  background: linear-gradient(
+    90deg,
+    #2C3E50 0%,
+    #357ABD 25%,
+    #8EC5FC 50%,
+    #6BA8E5 75%,
+    #2C3E50 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textGradientFlow 5s ease infinite;
+}
+
+.animate-brand-shimmer {
+  background: linear-gradient(
+    90deg,
+    #357ABD 0%,
+    #6BA8E5 25%,
+    #8EC5FC 50%,
+    #6BA8E5 75%,
+    #357ABD 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textGradientFlow 4s linear infinite;
+}
+
+@keyframes floatWord {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-float-word {
+  animation: floatWord 3.5s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    opacity: 0.8;
+    filter: drop-shadow(0 0 6px rgba(142, 197, 252, 0.6));
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 16px rgba(107, 168, 229, 0.95));
+  }
+}
+
+.animate-glow-pulse {
+  animation: glowPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes drawUnderline {
+  0%, 100% {
+    stroke-dashoffset: 0;
+    opacity: 0.9;
+  }
+  50% {
+    stroke-dashoffset: 12;
+    opacity: 0.6;
+  }
+}
+
+.animate-underline-pulse {
+  stroke-dasharray: 120;
+  animation: drawUnderline 3s ease-in-out infinite;
 }

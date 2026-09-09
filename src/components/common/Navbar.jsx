@@ -79,11 +79,11 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="border-b border-indigo-500/20 bg-[#090D16]/85 backdrop-blur-2xl sticky top-0 z-40 shadow-2xl transition-all duration-300">
+    <nav className="border-b border-[#E1EDF7] bg-white/95 backdrop-blur-2xl sticky top-0 z-40 shadow-sm transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14">
           
-          {/* 1. Left: Electric Indigo Insignia Brand (With Secret Teacher Gateway Double Click) */}
+          {/* 1. Left: Brand Logo & Title */}
           <div className="flex items-center gap-3">
             <button 
               onClick={() => {
@@ -92,19 +92,19 @@ export const Navbar = () => {
                 showToast("🔒 Master Gateway: Opening Teacher Sign In Portal...", "info");
               }}
               className="flex items-center gap-2.5 group text-left cursor-pointer select-none"
-              title="Electric Indigo Insignia - Master Studio Login Gateway"
+              title="Master Studio Login Gateway"
             >
-              {/* Electric Indigo Logo Emblem */}
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 via-blue-500 to-cyan-400 text-white flex items-center justify-center font-black text-xs shadow-lg shadow-indigo-500/30 border border-indigo-400/40">
+              {/* Sky Blue Logo Emblem */}
+              <div className="w-8 h-8 rounded-lg bg-[#8EC5FC] hover:bg-[#6BA8E5] text-[#2C3E50] flex items-center justify-center font-black text-xs shadow-md shadow-[#8EC5FC]/30 border border-[#8EC5FC] transition">
                 LL
               </div>
 
               <div>
                 <div className="flex items-center gap-1">
-                  <span className="font-black text-base tracking-tight text-white">
+                  <span className="font-black text-base tracking-tight text-[#2C3E50]">
                     Lyntrix
                   </span>
-                  <span className="font-black text-base text-indigo-400">
+                  <span className="font-black text-base text-[#6BA8E5]">
                     {currentRole === 'teacher' ? 'Studio' :
                      currentRole === 'student' ? 'Learn' :
                      currentRole === 'admin' ? 'Admin' :
@@ -114,14 +114,14 @@ export const Navbar = () => {
               </div>
             </button>
 
-            {/* Radiant Emerald Certified Pill */}
-            <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[10px] font-bold text-emerald-400 tracking-wider uppercase backdrop-blur-md">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            {/* Sri Lanka Certified Pill */}
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#E1EDF7]/70 border border-[#8EC5FC]/40 text-[10px] font-bold text-[#2C3E50] tracking-wider uppercase">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#6BA8E5] animate-pulse"></span>
               <span>🇱🇰 Sri Lanka A/L Master Portal</span>
             </span>
           </div>
 
-          {/* 2. Middle & Right: Glass Search & Controls */}
+          {/* 2. Middle & Right: Search & Controls */}
           <div className="flex items-center gap-2.5">
             {/* Quick Search */}
             <div className="hidden lg:flex items-center relative">
@@ -130,28 +130,28 @@ export const Navbar = () => {
                 placeholder="Search masters, subjects..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-slate-900/80 border border-indigo-500/30 rounded-xl pl-8 pr-3 py-1 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-indigo-500 w-48 font-medium backdrop-blur-md"
+                className="bg-[#F4F8FA] border border-[#E1EDF7] rounded-xl pl-8 pr-3 py-1 text-xs text-[#2C3E50] placeholder-[#4A6572] focus:outline-none focus:border-[#8EC5FC] w-48 font-medium transition"
               />
-              <Search className="w-3.5 h-3.5 text-indigo-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+              <Search className="w-3.5 h-3.5 text-[#6BA8E5] absolute left-2.5 top-1/2 -translate-y-1/2" />
             </div>
 
             {/* Language Selector */}
             <button
               onClick={toggleLanguage}
-              className="px-2.5 py-1 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-indigo-500/30 text-[11px] font-bold text-white transition flex items-center gap-1 backdrop-blur-md"
+              className="px-2.5 py-1 rounded-xl bg-[#F4F8FA] hover:bg-[#E1EDF7] border border-[#E1EDF7] text-[11px] font-bold text-[#2C3E50] transition flex items-center gap-1"
               title="Toggle Language"
             >
               <span>🌐</span>
-              <span className="text-indigo-400 font-mono">{lang === 'en' ? 'EN' : 'SI'}</span>
+              <span className="text-[#6BA8E5] font-mono">{lang === 'en' ? 'EN' : 'SI'}</span>
             </button>
 
-            {/* Dark/Light Mode Switcher */}
+            {/* Light / Subtle Accent Switcher */}
             <button
               onClick={toggleTheme}
-              className="p-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-indigo-500/30 text-white text-xs font-bold transition flex items-center justify-center backdrop-blur-md"
+              className="p-1.5 rounded-xl bg-[#F4F8FA] hover:bg-[#E1EDF7] border border-[#E1EDF7] text-[#2C3E50] text-xs font-bold transition flex items-center justify-center"
               title="Toggle Theme"
             >
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
             </button>
 
             {/* Role Navigation CTAs */}
@@ -159,14 +159,14 @@ export const Navbar = () => {
               <>
                 <button
                   onClick={() => setCurrentRole('student')}
-                  className="hidden sm:inline-flex items-center px-3.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-indigo-500/40 text-white text-xs font-bold transition backdrop-blur-md"
+                  className="hidden sm:inline-flex items-center px-3.5 py-1.5 rounded-xl bg-white hover:bg-[#F4F8FA] border border-[#E1EDF7] text-[#2C3E50] text-xs font-bold transition shadow-sm"
                 >
                   Student Portal
                 </button>
 
                 <button
                   onClick={() => setShowAuthModal(true)}
-                  className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500 hover:from-indigo-700 hover:to-cyan-600 text-white text-xs font-bold transition shadow-lg shadow-indigo-500/25 active:scale-95"
+                  className="px-3.5 py-1.5 rounded-xl bg-[#8EC5FC] hover:bg-[#6BA8E5] text-[#2C3E50] hover:text-white text-xs font-bold transition shadow-md shadow-[#8EC5FC]/30 active:scale-95"
                 >
                   Log In
                 </button>

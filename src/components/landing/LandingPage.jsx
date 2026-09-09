@@ -165,10 +165,10 @@ export const LandingPage = () => {
   });
 
   return (
-    <div className="relative min-h-screen bg-[#090D16] text-[#F8FAFC] selection:bg-indigo-600 selection:text-white overflow-x-hidden w-full max-w-full space-y-16 pb-24">
+    <div className="relative min-h-screen bg-[#F4F8FA] text-[#2C3E50] selection:bg-[#8EC5FC] selection:text-[#2C3E50] overflow-x-hidden w-full max-w-full space-y-16 pb-24 font-sans">
       
       {/* ========================================================================= */}
-      {/* 1. SCROLL-DRIVEN SECTION DYNAMIC BACKGROUND SLIDESHOW WITH DARK GRADIENT */}
+      {/* 1. SCROLL-DRIVEN BACKGROUND SLIDESHOW WITH SUBTLE ICE-BLUE CANVASES */}
       {/* ========================================================================= */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         {HERO_SLIDES.map((slide, idx) => {
@@ -177,141 +177,106 @@ export const LandingPage = () => {
             <div
               key={idx}
               className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                isActive ? 'opacity-100 scale-105 transition-transform duration-[7500ms] ease-out' : 'opacity-0 scale-100'
+                isActive ? 'opacity-30 scale-105 transition-transform duration-[7500ms] ease-out' : 'opacity-0 scale-100'
               }`}
             >
               <img
                 src={slide.url}
                 alt={slide.stream}
-                className="w-full h-full object-cover object-center"
+                className="w-full h-full object-cover object-center filter brightness-105 contrast-100 saturate-110"
               />
             </div>
           );
         })}
 
-        {/* Deep Space Gradient Vignette */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#090D16]/95 via-[#090D16]/85 to-[#090D16] backdrop-blur-[2px]"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/25 via-transparent to-[#090D16]"></div>
+        {/* Subtle Canvas Overlay: Ice Blue & Pure White Transition */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#F4F8FA]/75 via-[#F4F8FA]/85 to-[#F4F8FA]"></div>
+        
+        {/* Soft Radiant Sky-Blue Lighting Spheres */}
+        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[1100px] h-[600px] bg-gradient-to-b from-[#8EC5FC]/30 via-[#E1EDF7]/40 to-transparent rounded-full blur-[130px] pointer-events-none"></div>
+        <div className="absolute top-10 left-[8%] w-[500px] h-[450px] bg-[#8EC5FC]/20 rounded-full blur-[120px] pointer-events-none"></div>
+        <div className="absolute top-20 right-[8%] w-[500px] h-[450px] bg-[#E1EDF7]/50 rounded-full blur-[120px] pointer-events-none"></div>
       </div>
 
       <div className="relative z-10 space-y-16">
         
         {/* ========================================================================= */}
-        {/* 2. HERO SECTION WITH GRADIENT HEADLINE & INTERACTIVE RADAR */}
+        {/* 2. FIRST PAGE HERO VIEW: CLEAN, CONCISE & VIEWPORT-OPTIMIZED */}
         {/* ========================================================================= */}
-        <section className="pt-10 lg:pt-16 pb-8 text-center px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto space-y-6">
+        <section className="min-h-[calc(100vh-3.5rem)] flex flex-col justify-center items-center text-center px-4 sm:px-6 lg:px-8 py-10">
+          <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8 my-auto">
             
             {/* Top Pill Badge */}
             <div className="flex justify-center">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-bold tracking-wider uppercase backdrop-blur-md shadow-2xl">
-                <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
-                <span>Sri Lanka's Premier Multi-Sir LMS • 2025/2026 A/L</span>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-[#E1EDF7] text-[#2C3E50] text-xs font-semibold shadow-sm">
+                <Sparkles className="w-3.5 h-3.5 text-[#6BA8E5]" />
+                <span>Smart Online Learning Platform</span>
               </div>
             </div>
 
-            {/* Glowing Gradient Headline with Animated Dynamic Changing Text */}
-            <div className="max-w-4xl mx-auto space-y-4">
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight drop-shadow-2xl min-h-[120px] sm:min-h-[150px]">
-                Empowering Sri Lanka's Next Generation of{' '}
-                <span key={slideIndex} className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-cyan-300 to-emerald-400 animate-in fade-in slide-in-from-bottom-3 duration-700">
-                  {[
-                    "Doctors, Engineers & Innovators.",
-                    "Island Rank 01 A/L Achievers.",
-                    "Combined Maths & Physics Masters.",
-                    "Chemistry & Biology Scholars.",
-                    "Future Tech Leaders & IT Pioneers."
-                  ][slideIndex]}
+            {/* Concise, Clean LMS Headline with Normal Smooth Animation */}
+            <div className="max-w-4xl mx-auto space-y-3">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#2C3E50] leading-tight animate-in fade-in slide-in-from-bottom-3 duration-700">
+                Learn Smarter with{' '}
+                <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#357ABD] via-[#6BA8E5] to-[#8EC5FC] bg-[length:200%_auto] animate-brand-shimmer">
+                  Lyntrix LMS
                 </span>
               </h1>
 
-              <p key={`sub-${slideIndex}`} className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed font-medium min-h-[48px] animate-in fade-in slide-in-from-bottom-2 duration-700">
-                {[
-                  "Attend live Zoom masterclasses, watch watermark-protected HD videos, submit paper answers for grading, and scan entrance pass QR codes.",
-                  "Master Sri Lanka A/L Theory & Revision units with Island Top Tuition Masters and instant score feedback.",
-                  "HD HLS video streaming, automated bank slip approvals, and hall gate laser barcode scanners.",
-                  "Comprehensive theory modules, timed MCQ paper challenges, and verified completion certificates.",
-                  "Islandwide rank-producing tuition masters empowered with custom SaaS subdomains and DRM video security."
-                ][slideIndex]}
+              <p className="text-sm sm:text-base text-[#4A6572] max-w-xl mx-auto font-medium leading-relaxed">
+                Live masterclasses, video lessons, and study materials — all in one simple place.
               </p>
 
-              {/* High-Tech HUD Feature Badges */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto pt-6">
-                <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-900/90 via-slate-900/70 to-indigo-950/40 backdrop-blur-2xl border border-amber-500/30 hover:border-amber-400 hover:shadow-[0_0_25px_rgba(245,158,11,0.25)] transition-all duration-300 text-left flex items-center gap-3.5 group">
-                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition">
-                    🎓
-                  </div>
-                  <div>
-                    <div className="font-bold text-xs text-white group-hover:text-amber-300 transition">Top 01% Master Faculty</div>
-                    <div className="text-[10px] text-amber-400/90 font-medium">Island Rank 01 Produced</div>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-900/90 via-slate-900/70 to-emerald-950/40 backdrop-blur-2xl border border-emerald-500/30 hover:border-emerald-400 hover:shadow-[0_0_25px_rgba(16,185,129,0.25)] transition-all duration-300 text-left flex items-center gap-3.5 group">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition">
-                    🛡️
-                  </div>
-                  <div>
-                    <div className="font-bold text-xs text-white group-hover:text-emerald-300 transition">4K Anti-Piracy DRM</div>
-                    <div className="text-[10px] text-emerald-400/90 font-medium">Dynamic Watermarked HLS</div>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-900/90 via-slate-900/70 to-cyan-950/40 backdrop-blur-2xl border border-cyan-500/30 hover:border-cyan-400 hover:shadow-[0_0_25px_rgba(6,182,212,0.25)] transition-all duration-300 text-left flex items-center gap-3.5 group">
-                  <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition">
-                    🎟️
-                  </div>
-                  <div>
-                    <div className="font-bold text-xs text-white group-hover:text-cyan-300 transition">Hall Gate QR Pass</div>
-                    <div className="text-[10px] text-cyan-400/90 font-medium">Laser Entrance Barcode</div>
-                  </div>
-                </div>
+              {/* Quick Action CTAs */}
+              <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                <button
+                  onClick={() => {
+                    const el = document.getElementById('courses-section');
+                    el?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="px-5 py-2.5 bg-[#8EC5FC] hover:bg-[#6BA8E5] text-[#2C3E50] hover:text-white font-bold rounded-2xl text-xs shadow-md shadow-[#8EC5FC]/30 transition-all duration-200 active:scale-95 flex items-center gap-2"
+                >
+                  <span>Explore Courses</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={() => setCurrentRole('student')}
+                  className="px-5 py-2.5 bg-white hover:bg-[#F4F8FA] border border-[#E1EDF7] hover:border-[#8EC5FC] text-[#2C3E50] font-bold rounded-2xl text-xs shadow-sm transition-all duration-200 active:scale-95"
+                >
+                  Student Portal
+                </button>
               </div>
             </div>
 
-            {/* 3. INTERACTIVE LIVE RADAR BROADCAST COMMAND DECK */}
-            <div className="mt-8 max-w-4xl mx-auto">
-              <div className="bg-gradient-to-r from-slate-900/95 via-slate-900/85 to-[#0F172A]/95 backdrop-blur-2xl text-white p-5 sm:p-6 rounded-3xl border border-rose-500/40 hover:border-rose-400 hover:shadow-[0_0_35px_rgba(244,63,94,0.3)] transition-all duration-500 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 relative overflow-hidden group">
-                <div className="flex items-center gap-4 text-left">
-                  <div className="relative shrink-0">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-rose-600 to-orange-500 text-white flex items-center justify-center shadow-lg shadow-rose-500/30 border border-rose-400/40">
-                      <Video className="w-6 h-6 animate-pulse" />
-                    </div>
-                    <span className="w-3 h-3 rounded-full bg-rose-500 border-2 border-slate-950 absolute -top-1 -right-1 animate-ping"></span>
-                  </div>
-
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-rose-400 bg-rose-500/10 border border-rose-500/30 px-2.5 py-0.5 rounded-full backdrop-blur-md">
-                        🔴 LIVE BROADCAST RADAR ACTIVE
-                      </span>
-                    </div>
-                    <h3 className="text-base sm:text-lg font-black text-white group-hover:text-rose-200 transition">
-                      Combined Maths — Theory Masterclass (අනුකලනය)
-                    </h3>
-                    <p className="text-xs text-slate-300 font-medium">
-                      Eng. Kasun Ranasinghe • Sunday 7:30 AM • <span className="text-emerald-400 font-bold">👨‍🎓 1,840 Active Students</span>
-                    </p>
-                  </div>
+            {/* Feature HUD Cards (Pure White with Pale Sky Borders) */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto pt-4">
+              <div className="p-4 rounded-2xl bg-white border border-[#E1EDF7] hover:border-[#8EC5FC] hover:shadow-md transition-all duration-300 text-left flex items-center gap-3.5 group shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-[#F4F8FA] border border-[#E1EDF7] flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition">
+                  🎓
                 </div>
+                <div>
+                  <div className="font-bold text-xs text-[#2C3E50] group-hover:text-[#357ABD] transition">Top 01% Master Faculty</div>
+                  <div className="text-[10px] text-[#4A6572] font-medium">Island Rank 01 Produced</div>
+                </div>
+              </div>
 
-                <div className="flex flex-wrap items-center gap-3 shrink-0">
-                  <div className="flex items-center gap-2 bg-slate-950 px-4 py-2.5 rounded-2xl border border-amber-500/40 text-xs font-mono font-bold text-amber-300 shadow-inner">
-                    <Clock className="w-4 h-4 text-amber-400 animate-pulse" />
-                    <span>Starts In: 02h 45m</span>
-                  </div>
+              <div className="p-4 rounded-2xl bg-white border border-[#E1EDF7] hover:border-[#8EC5FC] hover:shadow-md transition-all duration-300 text-left flex items-center gap-3.5 group shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-[#F4F8FA] border border-[#E1EDF7] flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition">
+                  🛡️
+                </div>
+                <div>
+                  <div className="font-bold text-xs text-[#2C3E50] group-hover:text-[#357ABD] transition">4K Anti-Piracy DRM</div>
+                  <div className="text-[10px] text-[#4A6572] font-medium">Dynamic Watermarked HLS</div>
+                </div>
+              </div>
 
-                  <button
-                    onClick={() => handleProtectedZoomAccess({
-                      batchId: 'd0000000-0000-0000-0000-000000000001',
-                      title: 'Combined Maths — Theory Masterclass',
-                      instructor: instructors[0]
-                    })}
-                    className="px-5 py-2.5 bg-gradient-to-r from-rose-600 via-orange-500 to-amber-500 hover:from-rose-500 hover:to-amber-400 text-white rounded-2xl text-xs font-black transition-all duration-300 shadow-[0_0_25px_rgba(244,63,94,0.4)] active:scale-95 flex items-center gap-2 shrink-0 border border-rose-400/40"
-                  >
-                    <span>Enter Zoom Room</span>
-                    <ArrowRight className="w-4 h-4 shrink-0" />
-                  </button>
+              <div className="p-4 rounded-2xl bg-white border border-[#E1EDF7] hover:border-[#8EC5FC] hover:shadow-md transition-all duration-300 text-left flex items-center gap-3.5 group shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-[#F4F8FA] border border-[#E1EDF7] flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition">
+                  🎟️
+                </div>
+                <div>
+                  <div className="font-bold text-xs text-[#2C3E50] group-hover:text-[#357ABD] transition">Hall Gate QR Pass</div>
+                  <div className="text-[10px] text-[#4A6572] font-medium">Laser Entrance Barcode</div>
                 </div>
               </div>
             </div>
@@ -319,29 +284,35 @@ export const LandingPage = () => {
         </section>
 
         {/* ========================================================================= */}
-        {/* 4. INTERACTIVE SUBJECT SPECIALIZATION CATALOG & SEARCH FILTERS */}
+        {/* 3. ESSENTIAL LMS COURSES DIRECTORY */}
         {/* ========================================================================= */}
         <AnimatedSection delay={100} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="space-y-6">
-            <div className="bg-slate-900/80 backdrop-blur-2xl p-6 sm:p-7 rounded-3xl border border-indigo-500/20 shadow-2xl space-y-5">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+          <div id="courses-section" className="space-y-6 pt-4 scroll-mt-20">
+            <div className="bg-white p-6 sm:p-7 rounded-3xl border border-[#E1EDF7] shadow-sm space-y-5">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-[#E1EDF7]">
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-black text-gradient-indigo">
-                    Sri Lankan A/L Master Directory
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E1EDF7]/70 text-[10px] font-bold text-[#2C3E50] uppercase tracking-wider mb-1.5">
+                    <BookOpen className="w-3 h-3 text-[#6BA8E5]" />
+                    <span>Academic Curriculum</span>
+                  </div>
+                  <h2 className="text-xl sm:text-2xl font-black text-[#2C3E50]">
+                    Available Master Batches & Courses
                   </h2>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    Filter by Subject Stream, Batch Year (2025/2026/2027 A/L), or Tuition Master.
+                  <p className="text-xs text-[#4A6572] mt-0.5">
+                    Filter by Subject, Batch Year (2025/2026/2027 A/L), or Tuition Master.
                   </p>
                 </div>
 
                 {/* Subject Stream Tabs */}
-                <div className="flex flex-wrap items-center gap-1.5 bg-slate-950 p-1 rounded-2xl border border-slate-800 text-xs">
+                <div className="flex flex-wrap items-center gap-1.5 bg-[#F4F8FA] p-1 rounded-2xl border border-[#E1EDF7] text-xs">
                   {['all', 'maths', 'physics', 'chemistry', 'ict'].map((subj) => (
                     <button
                       key={subj}
                       onClick={() => setSelectedSubject(subj)}
                       className={`px-3 py-1.5 rounded-xl font-bold uppercase text-[11px] transition ${
-                        selectedSubject === subj ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+                        selectedSubject === subj 
+                          ? 'bg-[#8EC5FC] text-[#2C3E50] shadow-sm' 
+                          : 'text-[#4A6572] hover:text-[#2C3E50]'
                       }`}
                     >
                       {subj === 'all' ? 'All Streams' : subj}
@@ -350,7 +321,7 @@ export const LandingPage = () => {
                 </div>
               </div>
 
-              {/* Multi-field Search Inputs */}
+              {/* Search & Year Filters */}
               <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
                 <div className="sm:col-span-8 relative">
                   <input
@@ -361,9 +332,9 @@ export const LandingPage = () => {
                     placeholder="Search by Master Name (Kasun, Nuwan...), Unit Title, or Subject..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-slate-950/80 border border-indigo-500/30 rounded-2xl pl-10 pr-4 py-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#F4F8FA] border border-[#E1EDF7] rounded-2xl pl-10 pr-4 py-3 text-xs text-[#2C3E50] placeholder-[#4A6572] focus:outline-none focus:border-[#8EC5FC] transition"
                   />
-                  <Search className="w-4 h-4 text-indigo-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <Search className="w-4 h-4 text-[#6BA8E5] absolute left-3.5 top-1/2 -translate-y-1/2" />
                 </div>
 
                 <div className="sm:col-span-4">
@@ -373,7 +344,7 @@ export const LandingPage = () => {
                     aria-label="Filter by Batch Year"
                     value={selectedGrade}
                     onChange={(e) => setSelectedGrade(e.target.value)}
-                    className="w-full bg-slate-950/80 border border-indigo-500/30 rounded-2xl px-4 py-3 text-xs text-white font-bold focus:outline-none"
+                    className="w-full bg-[#F4F8FA] border border-[#E1EDF7] rounded-2xl px-4 py-3 text-xs text-[#2C3E50] font-bold focus:outline-none focus:border-[#8EC5FC] transition"
                   >
                     <option value="all">All Batch Years (2025/2026/2027)</option>
                     <option value="2025">2025 A/L (Theory / Revision)</option>
@@ -384,95 +355,95 @@ export const LandingPage = () => {
               </div>
             </div>
 
-            {/* Ultra-Modern Glowing Course Cards Grid */}
+            {/* Course Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredInstructors.map((ins) => {
                 const primaryBatch = ins.batches[0];
                 return (
                   <div
                     key={ins.id}
-                    className="bg-slate-900/90 backdrop-blur-2xl rounded-3xl border border-indigo-500/30 hover:border-indigo-400 hover:shadow-[0_0_35px_rgba(99,102,241,0.3)] transition-all duration-500 flex flex-col justify-between overflow-hidden group hover:-translate-y-1.5"
+                    className="bg-white rounded-3xl border border-[#E1EDF7] hover:border-[#8EC5FC] hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden group hover:-translate-y-1 shadow-sm"
                   >
-                    {/* Thumbnail Cover Image & Overlay Badges */}
+                    {/* Cover Thumbnail with Instructor Info */}
                     <div className="relative h-52 overflow-hidden">
                       <img
                         src={ins.cover}
                         alt={ins.name}
-                        className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#090D16] via-slate-950/50 to-transparent"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
 
-                      {/* Glass Top Badges */}
+                      {/* Top Badges */}
                       <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
                         <div className="flex items-center gap-1.5">
-                          <span className="px-3 py-1 rounded-xl bg-slate-950/80 text-indigo-300 text-[10px] font-bold border border-indigo-400/50 backdrop-blur-md shadow-lg">
+                          <span className="px-3 py-1 rounded-xl bg-white/90 text-[#2C3E50] text-[10px] font-bold border border-[#E1EDF7] shadow-sm">
                             {ins.subject}
                           </span>
-                          <span className="px-3 py-1 rounded-xl bg-slate-950/80 text-emerald-400 text-[10px] font-bold border border-emerald-500/50 backdrop-blur-md shadow-lg">
+                          <span className="px-3 py-1 rounded-xl bg-white/90 text-[#2C3E50] text-[10px] font-bold border border-[#E1EDF7] shadow-sm">
                             Year: {primaryBatch?.gradeYear || '2026'}
                           </span>
                         </div>
 
-                        <span className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[10px] font-bold backdrop-blur-md">
-                          <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                        <span className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/90 border border-[#E1EDF7] text-[#2C3E50] text-[10px] font-bold shadow-sm">
+                          <Star className="w-3 h-3 fill-amber-400 text-amber-500" />
                           <span>4.9</span>
                         </span>
                       </div>
 
-                      {/* Instructor Avatar & Verification */}
-                      <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white">
+                      {/* Instructor Avatar */}
+                      <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white drop-shadow">
                         <div className="flex items-center gap-3">
                           <div className="relative">
                             <img
                               src={ins.avatar}
                               alt={ins.name}
-                              className="w-11 h-11 rounded-xl object-cover border-2 border-indigo-500 shadow-xl"
+                              className="w-11 h-11 rounded-xl object-cover border-2 border-white shadow-md"
                             />
-                            <CheckCircle2 className="w-4 h-4 text-emerald-400 fill-slate-950 absolute -bottom-1 -right-1" />
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400 fill-white absolute -bottom-1 -right-1" />
                           </div>
                           <div>
-                            <div className="font-bold text-xs text-white group-hover:text-indigo-300 transition flex items-center gap-1">
+                            <div className="font-bold text-xs text-white group-hover:text-[#8EC5FC] transition flex items-center gap-1">
                               <span>{ins.name}</span>
                             </div>
-                            <div className="text-[10px] text-slate-300 font-medium">{ins.title}</div>
+                            <div className="text-[10px] text-white/90 font-medium">{ins.title}</div>
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    {/* Card Content & Micro Features */}
+                    {/* Card Body */}
                     <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                       <div className="space-y-2">
-                        <h3 className="font-bold text-white text-base line-clamp-1 group-hover:text-indigo-300 transition">
+                        <h3 className="font-bold text-[#2C3E50] text-base line-clamp-1 group-hover:text-[#357ABD] transition">
                           {primaryBatch?.title}
                         </h3>
-                        <p className="text-xs text-slate-300/90 line-clamp-2 leading-relaxed font-medium">
+                        <p className="text-xs text-[#4A6572] line-clamp-2 leading-relaxed font-medium">
                           {primaryBatch?.description}
                         </p>
 
-                        {/* Micro Feature Indicators */}
-                        <div className="flex flex-wrap items-center gap-2 pt-2 text-[10px] text-slate-300">
-                          <span className="flex items-center gap-1 bg-slate-950/80 px-2.5 py-1 rounded-lg border border-slate-800">
-                            <Video className="w-3 h-3 text-indigo-400" /> 4K DRM Replays
+                        {/* Feature Badges */}
+                        <div className="flex flex-wrap items-center gap-2 pt-2 text-[10px] text-[#4A6572]">
+                          <span className="flex items-center gap-1 bg-[#F4F8FA] px-2.5 py-1 rounded-lg border border-[#E1EDF7]">
+                            <Video className="w-3 h-3 text-[#6BA8E5]" /> 4K DRM Replays
                           </span>
-                          <span className="flex items-center gap-1 bg-slate-950/80 px-2.5 py-1 rounded-lg border border-slate-800">
-                            <FileText className="w-3 h-3 text-emerald-400" /> Theory Tutes
+                          <span className="flex items-center gap-1 bg-[#F4F8FA] px-2.5 py-1 rounded-lg border border-[#E1EDF7]">
+                            <FileText className="w-3 h-3 text-emerald-600" /> Theory Tutes
                           </span>
                         </div>
                       </div>
 
-                      <div className="pt-3.5 border-t border-slate-800/80 flex items-center justify-between gap-3">
+                      <div className="pt-3.5 border-t border-[#E1EDF7] flex items-center justify-between gap-3">
                         <div className="shrink-0">
-                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Tuition Fee</span>
-                          <div className="text-sm sm:text-base font-black text-emerald-400 font-mono">
+                          <span className="text-[10px] text-[#4A6572] font-bold uppercase tracking-wider block">Tuition Fee</span>
+                          <div className="text-sm sm:text-base font-black text-[#2C3E50] font-mono">
                             LKR {ins.monthlyFee.toLocaleString()}
-                            <span className="text-[10px] font-normal text-slate-400 font-sans">/mo</span>
+                            <span className="text-[10px] font-normal text-[#4A6572] font-sans">/mo</span>
                           </div>
                         </div>
 
                         <button
                           onClick={() => handleProtectedEnroll(ins)}
-                          className="px-5 py-2.5 bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white rounded-xl text-xs font-bold transition-all duration-300 shadow-md shadow-indigo-500/25 active:scale-95 flex items-center gap-1.5 whitespace-nowrap shrink-0 border border-indigo-400/30"
+                          className="px-5 py-2.5 bg-[#8EC5FC] hover:bg-[#6BA8E5] text-[#2C3E50] hover:text-white rounded-xl text-xs font-bold transition-all duration-300 shadow-md shadow-[#8EC5FC]/25 active:scale-95 flex items-center gap-1.5 whitespace-nowrap shrink-0 border border-[#8EC5FC]"
                         >
                           <span>Enroll Batch</span>
                           <ChevronRight className="w-4 h-4 shrink-0" />
@@ -487,31 +458,92 @@ export const LandingPage = () => {
         </AnimatedSection>
 
         {/* ========================================================================= */}
-        {/* 5. FACULTY SPOTLIGHT SHOWCASE CAROUSEL */}
+        {/* 4. HOW LYNTRIX WORKS: 4 ESSENTIAL PLATFORM PILLARS */}
         {/* ========================================================================= */}
         <AnimatedSection delay={150} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-slate-900/80 backdrop-blur-2xl p-8 sm:p-10 rounded-3xl border border-indigo-500/20 shadow-2xl space-y-6">
+          <div className="bg-white p-8 sm:p-10 rounded-3xl border border-[#E1EDF7] shadow-sm space-y-8">
             <div className="text-center max-w-2xl mx-auto space-y-2">
-              <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider bg-indigo-500/10 border border-indigo-500/30 px-3 py-1 rounded-full">
+              <span className="text-xs font-bold text-[#2C3E50] uppercase tracking-wider bg-[#E1EDF7] border border-[#8EC5FC]/40 px-3 py-1 rounded-full">
+                Built for Sri Lankan Students & Teachers
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-[#2C3E50]">
+                Everything You Need for A/L Success
+              </h2>
+              <p className="text-xs text-[#4A6572] leading-relaxed">
+                From live broadcasts to home-delivered theory notes, our system simplifies tuition management.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              <div className="p-5 rounded-2xl bg-[#F4F8FA] border border-[#E1EDF7] hover:border-[#8EC5FC] transition space-y-3">
+                <div className="w-12 h-12 rounded-xl bg-white border border-[#E1EDF7] flex items-center justify-center text-2xl shadow-sm text-[#357ABD]">
+                  🎥
+                </div>
+                <h3 className="font-bold text-sm text-[#2C3E50]">Live Zoom & Protected Replays</h3>
+                <p className="text-xs text-[#4A6572] leading-relaxed">
+                  Join live interactive video sessions or watch watermark-protected HD recordings anytime.
+                </p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-[#F4F8FA] border border-[#E1EDF7] hover:border-[#8EC5FC] transition space-y-3">
+                <div className="w-12 h-12 rounded-xl bg-white border border-[#E1EDF7] flex items-center justify-center text-2xl shadow-sm text-[#357ABD]">
+                  📦
+                </div>
+                <h3 className="font-bold text-sm text-[#2C3E50]">Printed Tute Home Delivery</h3>
+                <p className="text-xs text-[#4A6572] leading-relaxed">
+                  Monthly printed past paper packs and revision notes dispatched directly to your doorstep.
+                </p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-[#F4F8FA] border border-[#E1EDF7] hover:border-[#8EC5FC] transition space-y-3">
+                <div className="w-12 h-12 rounded-xl bg-white border border-[#E1EDF7] flex items-center justify-center text-2xl shadow-sm text-[#357ABD]">
+                  🎟️
+                </div>
+                <h3 className="font-bold text-sm text-[#2C3E50]">Hall Gate QR Attendance</h3>
+                <p className="text-xs text-[#4A6572] leading-relaxed">
+                  Instant laser entrance pass verification with digital student ID at physical institute halls.
+                </p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-[#F4F8FA] border border-[#E1EDF7] hover:border-[#8EC5FC] transition space-y-3">
+                <div className="w-12 h-12 rounded-xl bg-white border border-[#E1EDF7] flex items-center justify-center text-2xl shadow-sm text-[#357ABD]">
+                  💳
+                </div>
+                <h3 className="font-bold text-sm text-[#2C3E50]">Bank Slip & Card Payments</h3>
+                <p className="text-xs text-[#4A6572] leading-relaxed">
+                  Upload bank transfer slips or pay via card with quick verification and automated pass issuing.
+                </p>
+              </div>
+            </div>
+          </div>
+        </AnimatedSection>
+
+        {/* ========================================================================= */}
+        {/* 5. TOP FACULTY SPOTLIGHT */}
+        {/* ========================================================================= */}
+        <AnimatedSection delay={200} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white p-8 sm:p-10 rounded-3xl border border-[#E1EDF7] shadow-sm space-y-6">
+            <div className="text-center max-w-2xl mx-auto space-y-2">
+              <span className="text-xs font-bold text-[#2C3E50] uppercase tracking-wider bg-[#E1EDF7] border border-[#8EC5FC]/40 px-3 py-1 rounded-full">
                 Sri Lanka's Leading Master Faculty
               </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-gradient-indigo">
+              <h2 className="text-2xl sm:text-3xl font-black text-[#2C3E50]">
                 Learn from Island Rank 01 Producing Tuition Masters
               </h2>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-4">
               {instructors.map((ins) => (
-                <div key={ins.id} className="p-5 rounded-2xl bg-slate-950 border border-slate-800 text-center space-y-3 hover:border-indigo-500/50 transition group">
-                  <img src={ins.avatar} alt={ins.name} className="w-20 h-20 rounded-2xl object-cover mx-auto border-2 border-indigo-500/40 group-hover:scale-105 transition" />
+                <div key={ins.id} className="p-5 rounded-2xl bg-[#F4F8FA] border border-[#E1EDF7] text-center space-y-3 hover:border-[#8EC5FC] hover:shadow-md transition group">
+                  <img src={ins.avatar} alt={ins.name} className="w-20 h-20 rounded-2xl object-cover mx-auto border-2 border-white shadow-sm group-hover:scale-105 transition" />
                   <div>
-                    <h4 className="font-bold text-white text-sm">{ins.name}</h4>
-                    <div className="text-xs text-indigo-400 font-bold mt-0.5">{ins.subject}</div>
-                    <div className="text-[11px] text-slate-400 font-mono mt-1">{ins.studentsCount.toLocaleString()} Enrolled Students</div>
+                    <h4 className="font-bold text-[#2C3E50] text-sm">{ins.name}</h4>
+                    <div className="text-xs text-[#357ABD] font-bold mt-0.5">{ins.subject}</div>
+                    <div className="text-[11px] text-[#4A6572] font-mono mt-1">{ins.studentsCount.toLocaleString()} Enrolled Students</div>
                   </div>
-                  <div className="flex items-center justify-center gap-1 text-amber-400 text-xs font-bold pt-2 border-t border-slate-900">
-                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                    <span>{ins.rating} Rating ({ins.reviewsCount} reviews)</span>
+                  <div className="flex items-center justify-center gap-1 text-amber-500 text-xs font-bold pt-2 border-t border-[#E1EDF7]">
+                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
+                    <span className="text-[#2C3E50]">{ins.rating} Rating ({ins.reviewsCount} reviews)</span>
                   </div>
                 </div>
               ))}
@@ -519,50 +551,95 @@ export const LandingPage = () => {
           </div>
         </AnimatedSection>
 
+        {/* ========================================================================= */}
+        {/* 6. STUDENT FAQ ACCORDION */}
+        {/* ========================================================================= */}
+        <AnimatedSection delay={250} className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white p-8 sm:p-10 rounded-3xl border border-[#E1EDF7] shadow-sm space-y-6">
+            <div className="text-center space-y-2">
+              <span className="text-xs font-bold text-[#2C3E50] uppercase tracking-wider bg-[#E1EDF7] border border-[#8EC5FC]/40 px-3 py-1 rounded-full">
+                Help & Answers
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-[#2C3E50]">
+                Frequently Asked Questions
+              </h2>
+            </div>
 
+            <div className="space-y-3 pt-2">
+              {[
+                {
+                  q: "How do I attend Live Zoom masterclasses?",
+                  a: "Once enrolled in a batch, you can login to your Student Hub and click the 'Join Live Zoom' button. Links are automatically generated with your student pass."
+                },
+                {
+                  q: "Can I watch recordings if I miss a live class?",
+                  a: "Yes! High-definition, watermark-protected recordings are uploaded to your student portal within 24 hours of each live lecture."
+                },
+                {
+                  q: "How does Bank Slip payment approval work?",
+                  a: "You can deposit the monthly fee at any local bank branch and upload a photo of the deposit slip. Our administration verifies slips with SMS confirmation."
+                },
+                {
+                  q: "How do I receive monthly printed tutes?",
+                  a: "During registration, provide your delivery address. Theory modules and model paper sets are dispatched via registered courier at the start of each month."
+                }
+              ].map((faq, idx) => (
+                <div key={idx} className="p-4 rounded-2xl bg-[#F4F8FA] border border-[#E1EDF7] space-y-1.5">
+                  <h4 className="font-bold text-sm text-[#2C3E50] flex items-center gap-2">
+                    <span className="text-[#6BA8E5]">Q:</span>
+                    <span>{faq.q}</span>
+                  </h4>
+                  <p className="text-xs text-[#4A6572] leading-relaxed pl-5">
+                    {faq.a}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </AnimatedSection>
 
         {/* ========================================================================= */}
-        {/* 6. FUTURISTIC DEEP SPACE GLASS FOOTER */}
+        {/* 7. CLEAN LIGHT THEME FOOTER */}
         {/* ========================================================================= */}
-        <footer className="bg-slate-950/90 backdrop-blur-2xl text-white pt-12 pb-8 border-t border-slate-800">
+        <footer className="bg-white text-[#4A6572] pt-12 pb-8 border-t border-[#E1EDF7] shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-xs text-slate-400">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-xs text-[#4A6572]">
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-indigo-600 to-cyan-400 text-white flex items-center justify-center font-black text-xs">
+                  <div className="w-7 h-7 rounded-lg bg-[#8EC5FC] text-[#2C3E50] flex items-center justify-center font-black text-xs shadow-sm">
                     LL
                   </div>
-                  <span className="font-black text-base text-white">Lyntrix Learn</span>
+                  <span className="font-black text-base text-[#2C3E50]">Lyntrix Learn</span>
                 </div>
-                <p className="text-slate-400 text-[11px] leading-relaxed">
-                  Sri Lanka's preeminent tuition LMS platform empowering Sri Lankan A/L students with structured academic mastery.
+                <p className="text-[#4A6572] text-[11px] leading-relaxed">
+                  Sri Lanka's premier tuition LMS platform empowering Sri Lankan A/L students with structured academic mastery.
                 </p>
               </div>
 
               <div className="space-y-2">
-                <div className="font-bold text-indigo-400 uppercase text-[11px] tracking-wider mb-2">Academic Policies</div>
-                <div><a href="#terms" className="hover:text-white transition">Student Honor Code</a></div>
-                <div><a href="#privacy" className="hover:text-white transition">Anti-Piracy & DRM Policy</a></div>
-                <div><a href="#slips" className="hover:text-white transition">Bank Slip Approval Guidelines</a></div>
+                <div className="font-bold text-[#2C3E50] uppercase text-[11px] tracking-wider mb-2">Academic Policies</div>
+                <div><a href="#terms" className="hover:text-[#2C3E50] transition">Student Honor Code</a></div>
+                <div><a href="#privacy" className="hover:text-[#2C3E50] transition">Anti-Piracy & DRM Policy</a></div>
+                <div><a href="#slips" className="hover:text-[#2C3E50] transition">Bank Slip Approval Guidelines</a></div>
               </div>
 
               <div className="space-y-2">
-                <div className="font-bold text-indigo-400 uppercase text-[11px] tracking-wider mb-2">Instructor Directory</div>
-                <div><a href="#maths" className="hover:text-white transition">Combined Mathematics Masters</a></div>
-                <div><a href="#physics" className="hover:text-white transition">Physics Department</a></div>
-                <div><a href="#chem" className="hover:text-white transition">Chemistry Faculty</a></div>
-                <div><a href="#ict" className="hover:text-white transition">A/L ICT School</a></div>
+                <div className="font-bold text-[#2C3E50] uppercase text-[11px] tracking-wider mb-2">Subject Streams</div>
+                <div><a href="#courses-section" className="hover:text-[#2C3E50] transition">Combined Mathematics</a></div>
+                <div><a href="#courses-section" className="hover:text-[#2C3E50] transition">Advanced Physics</a></div>
+                <div><a href="#courses-section" className="hover:text-[#2C3E50] transition">Chemistry Faculty</a></div>
+                <div><a href="#courses-section" className="hover:text-[#2C3E50] transition">A/L ICT & Computing</a></div>
               </div>
 
               <div className="space-y-2">
-                <div className="font-bold text-indigo-400 uppercase text-[11px] tracking-wider mb-2">Help & Support</div>
+                <div className="font-bold text-[#2C3E50] uppercase text-[11px] tracking-wider mb-2">Help & Support</div>
                 <div><span>Hotline: +94 11 234 5678</span></div>
                 <div><span>Email: support@lyntrix.learn</span></div>
                 <div><span>Station: Colombo, Sri Lanka</span></div>
               </div>
             </div>
 
-            <div className="pt-6 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-500 font-sans">
+            <div className="pt-6 border-t border-[#E1EDF7] flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[#4A6572] font-sans">
               <div>© 2026 Lyntrix Learn Technologies (Pvt) Ltd. All rights reserved.</div>
               <div className="flex gap-4">
                 <span>🇱🇰 Sri Lanka National A/L Standard</span>

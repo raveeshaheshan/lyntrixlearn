@@ -49,7 +49,7 @@ const AppContent = () => {
   const isDashboardRole = currentRole === 'teacher' || currentRole === 'student';
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 bg-mesh selection:bg-blue-600 selection:text-white overflow-x-hidden w-full max-w-full relative">
+    <div className="min-h-screen flex flex-col bg-[#F4F8FA] text-[#2C3E50] selection:bg-[#8EC5FC] selection:text-[#2C3E50] overflow-x-hidden w-full max-w-full relative font-sans">
       {/* 1. Context Branded Navbar */}
       <Navbar />
 
@@ -83,11 +83,11 @@ const AppContent = () => {
           <div className={`flex items-center gap-3 px-4 py-3 rounded-2xl border shadow-xl backdrop-blur-xl ${
             toast.type === 'success' ? 'bg-emerald-50 border-emerald-300 text-emerald-900 shadow-emerald-500/10' :
             toast.type === 'error' ? 'bg-rose-50 border-rose-300 text-rose-900 shadow-rose-500/10' :
-            'bg-blue-50 border-blue-300 text-blue-900 shadow-blue-500/10'
+            'bg-white border-[#E1EDF7] text-[#2C3E50] shadow-[0_8px_30px_rgba(142,197,252,0.2)]'
           }`}>
             {toast.type === 'success' && <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />}
             {toast.type === 'error' && <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />}
-            {toast.type === 'info' && <Info className="w-5 h-5 text-blue-600 shrink-0" />}
+            {toast.type === 'info' && <Info className="w-5 h-5 text-[#6BA8E5] shrink-0" />}
             <span className="text-xs font-bold">{toast.message}</span>
           </div>
         </div>
@@ -109,24 +109,24 @@ const AppContent = () => {
       <DigitalStudentCard />
 
       {/* 6. Modern LMS Footer with Protected Admin Access link */}
-      <footer className="border-t border-slate-200 bg-white py-6 text-xs text-slate-500 shadow-inner">
+      <footer className="border-t border-[#E1EDF7] bg-white py-6 text-xs text-[#4A6572] shadow-sm">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold">
+            <div className="w-6 h-6 rounded-lg bg-[#8EC5FC] flex items-center justify-center text-[#2C3E50] font-bold shadow-sm">
               <GraduationCap className="w-3.5 h-3.5" />
             </div>
-            <span className="font-extrabold text-slate-800">Lyntrix Learn</span>
+            <span className="font-extrabold text-[#2C3E50]">Lyntrix Learn</span>
             <span>— Multi-Tenant Tuition & LMS SaaS</span>
           </div>
           
           <div className="flex items-center gap-4">
-            <span className="text-slate-500">
+            <span className="text-[#4A6572]">
               Crafted for Sri Lankan Tuition Masters & Academies
             </span>
             {/* Protected Admin Access trigger */}
             <button
               onClick={() => setCurrentRole('admin')}
-              className="inline-flex items-center gap-1 text-slate-400 hover:text-purple-600 font-bold transition px-2 py-1 rounded hover:bg-purple-50"
+              className="inline-flex items-center gap-1 text-[#4A6572] hover:text-[#2C3E50] font-bold transition px-2 py-1 rounded hover:bg-[#E1EDF7]/50"
               title="Platform Administrator Login"
             >
               <ShieldCheck className="w-3.5 h-3.5" />

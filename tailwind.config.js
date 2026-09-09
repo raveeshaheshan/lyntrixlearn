@@ -8,31 +8,50 @@ export default {
   theme: {
     extend: {
       colors: {
+        // EXACT WHITE & SKY BLUE LIGHT THEME PALETTE
+        canvas: '#F4F8FA',          // Secondary Background / App Canvas (subtle ice blue)
+        surface: '#FFFFFF',         // Main Background / Surface / Elevated containers
+        border: {
+          light: '#E1EDF7',         // Pale Sky Blue (Card borders, separators, dividers)
+          DEFAULT: '#E1EDF7',
+          sky: '#8EC5FC',
+        },
         brand: {
-          50: '#eef2ff',
-          100: '#e0e7ff',
-          200: '#c7d2fe',
-          300: '#a5b4fc',
-          400: '#818cf8',
-          500: '#6366f1',
-          600: '#4f46e5',
-          700: '#4338ca',
-          800: '#3730a3',
-          900: '#312e81',
-          950: '#1e1b4b',
+          50: '#F4F8FA',
+          100: '#E1EDF7',
+          200: '#C5E0FB',
+          300: '#8EC5FC',           // Primary Brand / Interactive / Accent
+          400: '#6BA8E5',           // Primary Action Hover / Focus
+          500: '#4A90E2',
+          600: '#357ABD',
+          700: '#2A6197',
+          800: '#2C3E50',           // Primary Text / Headings
+          900: '#1E2C3A',
+        },
+        primary: {
+          DEFAULT: '#8EC5FC',       // Primary Brand (#8EC5FC)
+          hover: '#6BA8E5',         // Hover/Focus (#6BA8E5)
+          light: '#E1EDF7',
+          dark: '#357ABD',
+        },
+        content: {
+          primary: '#2C3E50',       // Primary Text / Headings (Deep Slate Navy)
+          secondary: '#4A6572',     // Secondary Text / Subtitles / Muted
+          muted: '#78909C',
+          inverse: '#FFFFFF',
         },
         cyber: {
-          emerald: '#10b981',
-          teal: '#14b8a6',
-          cyan: '#06b6d4',
-          violet: '#8b5cf6',
-          fuchsia: '#d946ef',
-          amber: '#f59e0b',
-          rose: '#f43f5e',
-          dark: '#0a0d14',
-          darker: '#06080d',
-          card: '#0f1422',
-          border: 'rgba(255, 255, 255, 0.08)',
+          emerald: '#059669',
+          teal: '#0d9488',
+          cyan: '#0284c7',
+          violet: '#7c3aed',
+          fuchsia: '#c026d3',
+          amber: '#d97706',
+          rose: '#e11d48',
+          dark: '#2C3E50',
+          darker: '#1E2C3A',
+          card: '#FFFFFF',
+          border: '#E1EDF7',
         }
       },
       fontFamily: {
