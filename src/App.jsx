@@ -18,6 +18,7 @@ const TeacherLoginPage = lazy(() => import('./components/auth/TeacherLoginPage')
 const TeacherPlanCheckoutModal = lazy(() => import('./components/auth/TeacherPlanCheckoutModal').then(m => ({ default: m.TeacherPlanCheckoutModal })));
 const FeePaymentModal = lazy(() => import('./components/student/FeePaymentModal').then(m => ({ default: m.FeePaymentModal })));
 const DigitalStudentCard = lazy(() => import('./components/student/DigitalStudentCard').then(m => ({ default: m.DigitalStudentCard })));
+const QuizExamPlayer = lazy(() => import('./components/student/QuizExamPlayer').then(m => ({ default: m.QuizExamPlayer })));
 
 const PortalLoadingFallback = () => (
   <div className="flex items-center justify-center min-h-[420px] w-full py-16 animate-in fade-in duration-200">
@@ -120,6 +121,7 @@ const AppContent = () => {
 
       <FeePaymentModal />
       <DigitalStudentCard />
+      <QuizExamPlayer />
 
       {/* 6. Modern LMS Footer with Protected Admin Access link */}
       <footer className="border-t border-[#E1EDF7] bg-white py-6 text-xs text-[#4A6572] shadow-sm">

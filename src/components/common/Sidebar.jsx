@@ -49,6 +49,13 @@ export const Sidebar = () => {
 
   const currentTabs = currentRole === 'student' ? studentTabs : teacherTabs;
 
+  const handleSelectTab = (tabId) => {
+    setActiveTab(tabId);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const mainEl = document.querySelector('main');
+    if (mainEl) mainEl.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <>
       {/* ===================================================================== */}
@@ -97,7 +104,7 @@ export const Sidebar = () => {
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleSelectTab(tab.id)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap shrink-0 transition-all duration-200 active:scale-95 ${
                   isActive
                     ? 'bg-[#8EC5FC] text-[#2C3E50] shadow-sm border border-[#8EC5FC]'
@@ -151,7 +158,7 @@ export const Sidebar = () => {
               return (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => handleSelectTab(tab.id)}
                   className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 active:scale-95 ${
                     isActive
                       ? 'bg-[#8EC5FC] text-[#2C3E50] shadow-sm border border-[#8EC5FC]'
