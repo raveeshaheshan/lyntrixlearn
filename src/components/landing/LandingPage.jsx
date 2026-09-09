@@ -59,6 +59,7 @@ const HERO_SLIDES = [
 export const LandingPage = () => {
   const { 
     instructors, 
+    students,
     setCurrentRole, 
     setCurrentTeacherId,
     currentRole,
@@ -301,13 +302,13 @@ export const LandingPage = () => {
                   <span className="text-[10px] font-bold uppercase tracking-wider text-rose-600 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full">
                     🔴 Live Radar Active
                   </span>
-                  <span className="hidden sm:inline-block text-[10px] text-[#4A6572] font-semibold">Next Zoom Session</span>
+                  <span className="hidden sm:inline-block text-[10px] text-[#4A6572] font-semibold">Next Scheduled Class</span>
                 </div>
                 <h3 className="text-sm sm:text-base font-bold text-[#2C3E50]">
-                  Combined Maths — Theory Masterclass (අනුකලනය)
+                  {instructors[0]?.batches[0]?.title || 'Combined Mathematics — Full Theory & Revision'}
                 </h3>
                 <p className="text-[11px] text-[#4A6572] font-medium">
-                  Eng. Kasun Ranasinghe • Sunday 7:30 AM • <span className="text-emerald-600 font-bold">1,840 Active Students</span>
+                  {instructors[0]?.name || 'Eng. Kasun Ranasinghe'} • {instructors[0]?.batches[0]?.schedule || 'Sunday 7:30 AM'} • <span className="text-emerald-600 font-bold">{students.length} Active Student{students.length === 1 ? '' : 's'}</span>
                 </p>
               </div>
             </div>
@@ -320,8 +321,8 @@ export const LandingPage = () => {
 
               <button
                 onClick={() => handleProtectedZoomAccess({
-                  batchId: 'd0000000-0000-0000-0000-000000000001',
-                  title: 'Combined Maths — Theory Masterclass',
+                  batchId: instructors[0]?.batches[0]?.id || 'live-batch-01',
+                  title: instructors[0]?.batches[0]?.title || 'Combined Mathematics — Full Theory',
                   instructor: instructors[0]
                 })}
                 className="px-4 py-2 bg-[#8EC5FC] hover:bg-[#6BA8E5] text-[#2C3E50] hover:text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-[#8EC5FC]/25 active:scale-95 flex items-center gap-1.5 border border-[#8EC5FC] whitespace-nowrap"
@@ -406,104 +407,116 @@ export const LandingPage = () => {
             </div>
 
             {/* Course Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredInstructors.map((ins) => {
-                const primaryBatch = ins.batches[0];
-                return (
-                  <div
-                    key={ins.id}
-                    className="bg-white rounded-3xl border border-[#E1EDF7] hover:border-[#8EC5FC] hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden group hover:-translate-y-1 shadow-sm"
-                  >
-                    {/* Cover Thumbnail with Instructor Info */}
-                    <div className="relative h-52 overflow-hidden">
-                      <img
-                        src={ins.cover}
-                        alt={ins.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+            {filteredInstructors.length === 0 ? (
+              <div className="bg-white rounded-3xl border border-[#E1EDF7] p-10 text-center space-y-3 shadow-sm">
+                <div className="w-12 h-12 rounded-2xl bg-[#F4F8FA] border border-[#E1EDF7] text-[#357ABD] flex items-center justify-center mx-auto text-xl font-bold">
+                  📚
+                </div>
+                <h3 className="font-bold text-[#2C3E50] text-sm sm:text-base">No Classes Found</h3>
+                <p className="text-xs text-[#4A6572] max-w-md mx-auto">
+                  There are no registered tuition classes matching your search or stream filter at the moment. Try selecting "All Streams".
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredInstructors.map((ins) => {
+                  const primaryBatch = ins.batches[0];
+                  return (
+                    <div
+                      key={ins.id}
+                      className="bg-white rounded-3xl border border-[#E1EDF7] hover:border-[#8EC5FC] hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden group hover:-translate-y-1 shadow-sm"
+                    >
+                      {/* Cover Thumbnail with Instructor Info */}
+                      <div className="relative h-52 overflow-hidden">
+                        <img
+                          src={ins.cover}
+                          alt={ins.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
 
-                      {/* Top Badges */}
-                      <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-                        <div className="flex items-center gap-1.5">
-                          <span className="px-3 py-1 rounded-xl bg-white/90 text-[#2C3E50] text-[10px] font-bold border border-[#E1EDF7] shadow-sm">
-                            {ins.subject}
-                          </span>
-                          <span className="px-3 py-1 rounded-xl bg-white/90 text-[#2C3E50] text-[10px] font-bold border border-[#E1EDF7] shadow-sm">
-                            Year: {primaryBatch?.gradeYear || '2026'}
+                        {/* Top Badges */}
+                        <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+                          <div className="flex items-center gap-1.5">
+                            <span className="px-3 py-1 rounded-xl bg-white/90 text-[#2C3E50] text-[10px] font-bold border border-[#E1EDF7] shadow-sm">
+                              {ins.subject}
+                            </span>
+                            <span className="px-3 py-1 rounded-xl bg-white/90 text-[#2C3E50] text-[10px] font-bold border border-[#E1EDF7] shadow-sm">
+                              Year: {primaryBatch?.gradeYear || '2026'}
+                            </span>
+                          </div>
+
+                          <span className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/90 border border-[#E1EDF7] text-[#2C3E50] text-[10px] font-bold shadow-sm">
+                            <Star className="w-3 h-3 fill-amber-400 text-amber-500" />
+                            <span>{ins.rating || '4.98'}</span>
                           </span>
                         </div>
 
-                        <span className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/90 border border-[#E1EDF7] text-[#2C3E50] text-[10px] font-bold shadow-sm">
-                          <Star className="w-3 h-3 fill-amber-400 text-amber-500" />
-                          <span>4.9</span>
-                        </span>
-                      </div>
-
-                      {/* Instructor Avatar */}
-                      <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white drop-shadow">
-                        <div className="flex items-center gap-3">
-                          <div className="relative">
-                            <img
-                              src={ins.avatar}
-                              alt={ins.name}
-                              className="w-11 h-11 rounded-xl object-cover border-2 border-white shadow-md"
-                            />
-                            <CheckCircle2 className="w-4 h-4 text-emerald-400 fill-white absolute -bottom-1 -right-1" />
-                          </div>
-                          <div>
-                            <div className="font-bold text-xs text-white group-hover:text-[#8EC5FC] transition flex items-center gap-1">
-                              <span>{ins.name}</span>
+                        {/* Instructor Avatar */}
+                        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white drop-shadow">
+                          <div className="flex items-center gap-3">
+                            <div className="relative">
+                              <img
+                                src={ins.avatar}
+                                alt={ins.name}
+                                className="w-11 h-11 rounded-xl object-cover border-2 border-white shadow-md"
+                              />
+                              <CheckCircle2 className="w-4 h-4 text-emerald-400 fill-white absolute -bottom-1 -right-1" />
                             </div>
-                            <div className="text-[10px] text-white/90 font-medium">{ins.title}</div>
+                            <div>
+                              <div className="font-bold text-xs text-white group-hover:text-[#8EC5FC] transition flex items-center gap-1">
+                                <span>{ins.name}</span>
+                              </div>
+                              <div className="text-[10px] text-white/90 font-medium">{ins.title}</div>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Card Body */}
-                    <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                      <div className="space-y-2">
-                        <h3 className="font-bold text-[#2C3E50] text-base line-clamp-1 group-hover:text-[#357ABD] transition">
-                          {primaryBatch?.title}
-                        </h3>
-                        <p className="text-xs text-[#4A6572] line-clamp-2 leading-relaxed font-medium">
-                          {primaryBatch?.description}
-                        </p>
+                      {/* Card Body */}
+                      <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div className="space-y-2">
+                          <h3 className="font-bold text-[#2C3E50] text-base line-clamp-1 group-hover:text-[#357ABD] transition">
+                            {primaryBatch?.title}
+                          </h3>
+                          <p className="text-xs text-[#4A6572] line-clamp-2 leading-relaxed font-medium">
+                            {primaryBatch?.description}
+                          </p>
 
-                        {/* Feature Badges */}
-                        <div className="flex flex-wrap items-center gap-2 pt-2 text-[10px] text-[#4A6572]">
-                          <span className="flex items-center gap-1 bg-[#F4F8FA] px-2.5 py-1 rounded-lg border border-[#E1EDF7]">
-                            <Video className="w-3 h-3 text-[#6BA8E5]" /> 4K DRM Replays
-                          </span>
-                          <span className="flex items-center gap-1 bg-[#F4F8FA] px-2.5 py-1 rounded-lg border border-[#E1EDF7]">
-                            <FileText className="w-3 h-3 text-emerald-600" /> Theory Tutes
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="pt-3.5 border-t border-[#E1EDF7] flex items-center justify-between gap-3">
-                        <div className="shrink-0">
-                          <span className="text-[10px] text-[#4A6572] font-bold uppercase tracking-wider block">Tuition Fee</span>
-                          <div className="text-sm sm:text-base font-black text-[#2C3E50] font-mono">
-                            LKR {ins.monthlyFee.toLocaleString()}
-                            <span className="text-[10px] font-normal text-[#4A6572] font-sans">/mo</span>
+                          {/* Feature Badges */}
+                          <div className="flex flex-wrap items-center gap-2 pt-2 text-[10px] text-[#4A6572]">
+                            <span className="flex items-center gap-1 bg-[#F4F8FA] px-2.5 py-1 rounded-lg border border-[#E1EDF7]">
+                              <Video className="w-3 h-3 text-[#6BA8E5]" /> 4K DRM Replays
+                            </span>
+                            <span className="flex items-center gap-1 bg-[#F4F8FA] px-2.5 py-1 rounded-lg border border-[#E1EDF7]">
+                              <FileText className="w-3 h-3 text-emerald-600" /> Theory Tutes
+                            </span>
                           </div>
                         </div>
 
-                        <button
-                          onClick={() => handleProtectedEnroll(ins)}
-                          className="px-5 py-2.5 bg-[#8EC5FC] hover:bg-[#6BA8E5] text-[#2C3E50] hover:text-white rounded-xl text-xs font-bold transition-all duration-300 shadow-md shadow-[#8EC5FC]/25 active:scale-95 flex items-center gap-1.5 whitespace-nowrap shrink-0 border border-[#8EC5FC]"
-                        >
-                          <span>Enroll Batch</span>
-                          <ChevronRight className="w-4 h-4 shrink-0" />
-                        </button>
+                        <div className="pt-3.5 border-t border-[#E1EDF7] flex items-center justify-between gap-3">
+                          <div className="shrink-0">
+                            <span className="text-[10px] text-[#4A6572] font-bold uppercase tracking-wider block">Tuition Fee</span>
+                            <div className="text-sm sm:text-base font-black text-[#2C3E50] font-mono">
+                              LKR {ins.monthlyFee.toLocaleString()}
+                              <span className="text-[10px] font-normal text-[#4A6572] font-sans">/mo</span>
+                            </div>
+                          </div>
+
+                          <button
+                            onClick={() => handleProtectedEnroll(ins)}
+                            className="px-5 py-2.5 bg-[#8EC5FC] hover:bg-[#6BA8E5] text-[#2C3E50] hover:text-white rounded-xl text-xs font-bold transition-all duration-300 shadow-md shadow-[#8EC5FC]/25 active:scale-95 flex items-center gap-1.5 whitespace-nowrap shrink-0 border border-[#8EC5FC]"
+                          >
+                            <span>Enroll Batch</span>
+                            <ChevronRight className="w-4 h-4 shrink-0" />
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </AnimatedSection>
 
@@ -582,14 +595,14 @@ export const LandingPage = () => {
               </h2>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 pt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 pt-4">
               {instructors.map((ins) => (
                 <div key={ins.id} className="p-3.5 sm:p-5 rounded-2xl bg-[#F4F8FA] border border-[#E1EDF7] text-center space-y-2 sm:space-y-3 hover:border-[#8EC5FC] hover:shadow-md transition group">
                   <img src={ins.avatar} alt={ins.name} className="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl object-cover mx-auto border-2 border-white shadow-sm group-hover:scale-105 transition" />
                   <div>
                     <h4 className="font-bold text-[#2C3E50] text-xs sm:text-sm truncate">{ins.name}</h4>
                     <div className="text-[11px] sm:text-xs text-[#357ABD] font-bold mt-0.5">{ins.subject}</div>
-                    <div className="text-[10px] sm:text-[11px] text-[#4A6572] font-mono mt-1">{ins.studentsCount.toLocaleString()} Students</div>
+                    <div className="text-[10px] sm:text-[11px] text-[#4A6572] font-mono mt-1">{students.length} Student{students.length === 1 ? '' : 's'}</div>
                   </div>
                   <div className="flex items-center justify-center gap-1 text-amber-500 text-[10px] sm:text-xs font-bold pt-2 border-t border-[#E1EDF7]">
                     <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-amber-400 text-amber-500 shrink-0" />

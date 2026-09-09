@@ -18,6 +18,7 @@ export const SuperAdminDashboard = () => {
   const { 
     instructors, 
     setInstructors, 
+    students,
     platformMetrics, 
     setCurrentTeacherId, 
     setCurrentRole,
@@ -202,7 +203,7 @@ export const SuperAdminDashboard = () => {
           <div className="text-2xl font-black text-slate-900 mt-3">LKR {platformMetrics.monthlyRecurringRevenueLKR}</div>
           <div className="text-[11px] text-emerald-600 font-bold flex items-center gap-1 mt-1">
             <TrendingUp className="w-3 h-3" />
-            <span>+24.8% growth</span>
+            <span>Live DB Calculation</span>
           </div>
         </div>
 
@@ -211,17 +212,17 @@ export const SuperAdminDashboard = () => {
             <span className="text-xs text-slate-500 font-bold">Active Teachers / Sirs</span>
             <Users className="w-5 h-5 text-blue-600" />
           </div>
-          <div className="text-2xl font-black text-blue-600 mt-3">{instructors.length} Masters</div>
-          <div className="text-[11px] text-slate-500 mt-1">All on Pro SaaS Tier</div>
+          <div className="text-2xl font-black text-blue-600 mt-3">{instructors.length} Master{instructors.length === 1 ? '' : 's'}</div>
+          <div className="text-[11px] text-slate-500 mt-1">Live Database Verified</div>
         </div>
 
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-slate-500 font-bold">Cloud Video Storage</span>
-            <HardDrive className="w-5 h-5 text-cyan-600" />
+            <span className="text-xs text-slate-500 font-bold">Enrolled Students</span>
+            <Users className="w-5 h-5 text-cyan-600" />
           </div>
-          <div className="text-2xl font-black text-cyan-700 mt-3">{platformMetrics.storageUsedTB}</div>
-          <div className="text-[11px] text-slate-500 mt-1">HLS Encrypted CDN</div>
+          <div className="text-2xl font-black text-cyan-700 mt-3">{students.length} Student{students.length === 1 ? '' : 's'}</div>
+          <div className="text-[11px] text-slate-500 mt-1">Supabase Profiles Sync</div>
         </div>
 
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
@@ -275,7 +276,7 @@ export const SuperAdminDashboard = () => {
                   </div>
                   <div className="flex justify-between pt-1 border-t border-slate-200">
                     <span className="text-slate-500">Enrolled Students:</span>
-                    <strong className="text-slate-900">{ins.studentsCount.toLocaleString()}</strong>
+                    <strong className="text-slate-900">{(ins.studentsCount || students.length).toLocaleString()}</strong>
                   </div>
                 </div>
               </div>

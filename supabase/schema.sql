@@ -217,37 +217,40 @@ CREATE POLICY "Public update teachers" ON public.teachers FOR UPDATE USING (true
 DROP POLICY IF EXISTS "Teachers can update own profile" ON public.teachers;
 CREATE POLICY "Teachers can update own profile" ON public.teachers FOR ALL USING (auth.uid() = user_id OR user_id IS NULL);
 
--- Lessons: Students can only view lessons if enrolled and paid
-DROP POLICY IF EXISTS "Lessons accessible to paid students and author teacher" ON public.lessons;
-CREATE POLICY "Lessons accessible to paid students and author teacher" ON public.lessons
-  FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM public.enrollments
-      WHERE enrollments.batch_id = lessons.batch_id 
-        AND enrollments.student_id = auth.uid() 
-        AND enrollments.payment_status = 'Paid'
-    )
-    OR EXISTS (
-      SELECT 1 FROM public.teachers
-      WHERE teachers.id = lessons.teacher_id AND teachers.user_id = auth.uid()
-    )
-    OR (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'super_admin'
-  );
+-- Batches: Viewable and manageable by all
+DROP POLICY IF EXISTS "Batches viewable by all" ON public.batches;
+CREATE POLICY "Batches viewable by all" ON public.batches FOR SELECT USING (true);
 
--- Bank Slips: Students can insert & view their own slips; Teachers can view & approve their own slips
-DROP POLICY IF EXISTS "Students can insert own slip" ON public.bank_slips;
-CREATE POLICY "Students can insert own slip" ON public.bank_slips FOR INSERT WITH CHECK (auth.uid() = student_id);
+DROP POLICY IF EXISTS "Batches manageable by all" ON public.batches;
+CREATE POLICY "Batches manageable by all" ON public.batches FOR ALL USING (true);
 
-DROP POLICY IF EXISTS "Students view own slips" ON public.bank_slips;
-CREATE POLICY "Students view own slips" ON public.bank_slips FOR SELECT USING (auth.uid() = student_id);
+-- Enrollments: Viewable and manageable by all
+DROP POLICY IF EXISTS "Enrollments viewable by all" ON public.enrollments;
+CREATE POLICY "Enrollments viewable by all" ON public.enrollments FOR SELECT USING (true);
 
-DROP POLICY IF EXISTS "Teachers view and manage their class slips" ON public.bank_slips;
-CREATE POLICY "Teachers view and manage their class slips" ON public.bank_slips FOR ALL USING (
-  EXISTS (
-    SELECT 1 FROM public.teachers WHERE teachers.id = bank_slips.teacher_id AND teachers.user_id = auth.uid()
-  )
-  OR (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'super_admin'
-);
+DROP POLICY IF EXISTS "Enrollments manageable by all" ON public.enrollments;
+CREATE POLICY "Enrollments manageable by all" ON public.enrollments FOR ALL USING (true);
+
+-- Attendance Logs: Viewable and insertable
+DROP POLICY IF EXISTS "Attendance logs viewable by all" ON public.attendance_logs;
+CREATE POLICY "Attendance logs viewable by all" ON public.attendance_logs FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Attendance logs manageable by all" ON public.attendance_logs;
+CREATE POLICY "Attendance logs manageable by all" ON public.attendance_logs FOR ALL USING (true);
+
+-- Lessons: Viewable and manageable
+DROP POLICY IF EXISTS "Lessons viewable by all" ON public.lessons;
+CREATE POLICY "Lessons viewable by all" ON public.lessons FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Lessons manageable by all" ON public.lessons;
+CREATE POLICY "Lessons manageable by all" ON public.lessons FOR ALL USING (true);
+
+-- Bank Slips: Viewable and manageable
+DROP POLICY IF EXISTS "Bank slips viewable by all" ON public.bank_slips;
+CREATE POLICY "Bank slips viewable by all" ON public.bank_slips FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Bank slips manageable by all" ON public.bank_slips;
+CREATE POLICY "Bank slips manageable by all" ON public.bank_slips FOR ALL USING (true);
 
 -- =========================================================================
 -- AUTOMATIC PROFILE CREATION TRIGGER (When a new user signs up in Supabase)

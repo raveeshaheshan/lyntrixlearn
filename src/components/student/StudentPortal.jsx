@@ -229,7 +229,11 @@ export const StudentPortal = () => {
                           <button
                             onClick={() => {
                               const lesson = lessons.find(l => l.instructorId === teacher.id) || lessons[0];
-                              setActiveLesson(lesson);
+                              if (lesson) {
+                                setActiveLesson(lesson);
+                              } else {
+                                showToast("No recorded video lectures uploaded for this batch yet.", "info");
+                              }
                             }}
                             className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm"
                           >
@@ -485,47 +489,59 @@ export const StudentPortal = () => {
             <p className="text-xs text-slate-500">All lectures are streamed with dynamic watermark security to protect master content.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {lessons.map(lesson => (
-              <div key={lesson.id} className="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm flex flex-col justify-between group hover:shadow-md transition">
-                <div className="relative aspect-video bg-slate-900 overflow-hidden">
-                  <img src={lesson.thumbnail} alt={lesson.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
-                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                    <button
-                      onClick={() => setActiveLesson(lesson)}
-                      className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg"
-                    >
-                      <Play className="w-5 h-5 fill-current ml-0.5" />
-                    </button>
-                  </div>
-                  <div className="absolute bottom-2 right-2 bg-black/80 px-2 py-0.5 rounded text-[11px] font-mono text-white">
-                    {lesson.duration}
-                  </div>
-                  <div className="absolute top-2 left-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">
-                    {lesson.unit}
-                  </div>
-                </div>
-
-                <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
-                  <div>
-                    <h3 className="font-bold text-slate-900 text-sm line-clamp-2">{lesson.title}</h3>
-                    <p className="text-xs text-slate-500 mt-1 line-clamp-2">{lesson.description}</p>
-                  </div>
-
-                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                    <span className="text-[11px] text-slate-400">{lesson.date}</span>
-                    <button
-                      onClick={() => setActiveLesson(lesson)}
-                      className="px-3.5 py-1.5 bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5"
-                    >
-                      <Play className="w-3.5 h-3.5 fill-current" />
-                      <span>Watch Lesson</span>
-                    </button>
-                  </div>
-                </div>
+          {lessons.length === 0 ? (
+            <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center space-y-3 shadow-sm">
+              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto text-xl font-bold">
+                🎬
               </div>
-            ))}
-          </div>
+              <h3 className="font-bold text-slate-900 text-sm sm:text-base">No Video Lessons Uploaded Yet</h3>
+              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                Your tuition master will upload HD lecture recordings and study sessions here soon.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {lessons.map(lesson => (
+                <div key={lesson.id} className="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm flex flex-col justify-between group hover:shadow-md transition">
+                  <div className="relative aspect-video bg-slate-900 overflow-hidden">
+                    <img src={lesson.thumbnail} alt={lesson.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                      <button
+                        onClick={() => setActiveLesson(lesson)}
+                        className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg"
+                      >
+                        <Play className="w-5 h-5 fill-current ml-0.5" />
+                      </button>
+                    </div>
+                    <div className="absolute bottom-2 right-2 bg-black/80 px-2 py-0.5 rounded text-[11px] font-mono text-white">
+                      {lesson.duration}
+                    </div>
+                    <div className="absolute top-2 left-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">
+                      {lesson.unit}
+                    </div>
+                  </div>
+
+                  <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
+                    <div>
+                      <h3 className="font-bold text-slate-900 text-sm line-clamp-2">{lesson.title}</h3>
+                      <p className="text-xs text-slate-500 mt-1 line-clamp-2">{lesson.description}</p>
+                    </div>
+
+                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-[11px] text-slate-400">{lesson.date}</span>
+                      <button
+                        onClick={() => setActiveLesson(lesson)}
+                        className="px-3.5 py-1.5 bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5"
+                      >
+                        <Play className="w-3.5 h-3.5 fill-current" />
+                        <span>Watch Lesson</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

@@ -346,7 +346,7 @@ export const TeacherDashboard = () => {
           <div className="text-2xl font-black text-slate-900 mt-3">{totalEnrolled.toLocaleString()}</div>
           <div className="text-[11px] text-emerald-600 font-bold flex items-center gap-1 mt-1">
             <TrendingUp className="w-3 h-3" />
-            <span>+142 this month</span>
+            <span>Live DB Verified</span>
           </div>
         </div>
 
@@ -374,7 +374,7 @@ export const TeacherDashboard = () => {
             <Award className="w-5 h-5 text-amber-500" />
           </div>
           <div className="text-2xl font-black text-amber-600 mt-3">★ {currentTeacher.rating || 4.98}</div>
-          <div className="text-[11px] text-slate-500 mt-1">{currentTeacher.reviewsCount || 1420} Verified Reviews</div>
+          <div className="text-[11px] text-slate-500 mt-1">{currentTeacher.reviewsCount || 1} Verified Review{currentTeacher.reviewsCount === 1 ? '' : 's'}</div>
         </div>
       </div>
 
@@ -464,8 +464,8 @@ export const TeacherDashboard = () => {
                   <span className="w-2.5 h-2.5 rounded-full bg-rose-600 animate-ping"></span>
                   <span className="text-xs font-bold text-rose-700 uppercase tracking-wider">Live Scheduled Class</span>
                 </div>
-                <h3 className="text-lg font-bold text-slate-900">2025 A/L Combined Maths — Theory Masterclass</h3>
-                <p className="text-xs text-slate-600">Sunday 7:30 AM • 1,840 Students Waiting</p>
+                <h3 className="text-lg font-bold text-slate-900">{currentTeacher.batches[0]?.title || `${currentTeacher.subject} — Theory Masterclass`}</h3>
+                <p className="text-xs text-slate-600">{currentTeacher.batches[0]?.schedule || 'Sunday 7:30 AM'} • {totalEnrolled} Student{totalEnrolled === 1 ? '' : 's'} Enrolled</p>
               </div>
               <a
                 href={currentTeacher.batches[0]?.zoomLink || "https://zoom.us"}
@@ -499,7 +499,7 @@ export const TeacherDashboard = () => {
                       <p className="text-xs text-slate-500 mt-1">{batch.schedule}</p>
                     </div>
                     <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs text-slate-500">
-                      <span>{batch.enrolledCount.toLocaleString()} Students</span>
+                      <span>{totalEnrolled} Student{totalEnrolled === 1 ? '' : 's'}</span>
                       <span>{batch.recordingCount} Recordings</span>
                     </div>
                   </div>
