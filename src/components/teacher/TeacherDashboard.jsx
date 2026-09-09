@@ -30,6 +30,7 @@ import {
 import { TeacherSubscriptionModal } from './TeacherSubscriptionModal';
 import { CourseCreationWizardModal } from './CourseCreationWizardModal';
 import { AssignmentGradingModal } from './AssignmentGradingModal';
+import { AddLessonModal } from './AddLessonModal';
 
 export const TeacherDashboard = () => {
   const { 
@@ -1540,6 +1541,12 @@ export const TeacherDashboard = () => {
         isOpen={showGradingModal}
         onClose={() => setShowGradingModal(false)}
         submission={selectedGradingSub}
+      />
+
+      {/* ADD LESSON & R2 UPLOAD MODAL */}
+      <AddLessonModal
+        isOpen={showAddLessonModal}
+        onClose={() => setShowAddLessonModal(false)}
       />
     </div>
   );

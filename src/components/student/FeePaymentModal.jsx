@@ -9,6 +9,7 @@ import {
   Sparkles,
   Lock
 } from 'lucide-react';
+import { R2FileUploader } from '../common/R2FileUploader';
 
 export const FeePaymentModal = () => {
   const { 
@@ -59,6 +60,10 @@ export const FeePaymentModal = () => {
     e.preventDefault();
     if (!slipForm.referenceNo) {
       showToast("Please enter the deposit receipt reference number", "error");
+      return;
+    }
+    if (!slipForm.slipImage) {
+      showToast("Please upload your deposit receipt photo to Cloudflare R2", "error");
       return;
     }
 
@@ -233,19 +238,21 @@ export const FeePaymentModal = () => {
               />
             </div>
 
+            {/* Cloudflare R2 Slip Photo Uploader */}
             <div>
-              <label className="block text-xs font-bold text-[#2C3E50] mb-1">Slip Photo / Screenshot:</label>
-              <div className="p-3 bg-[#F4F8FA] border border-dashed border-[#8EC5FC] rounded-2xl flex items-center gap-3">
-                <img
-                  src={slipForm.slipImage}
-                  alt="Slip preview"
-                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl object-cover border border-[#E1EDF7]"
-                />
-                <div className="text-xs text-[#4A6572] space-y-0.5 overflow-hidden">
-                  <div className="text-[#2C3E50] font-bold truncate">deposit_receipt_august.jpg</div>
-                  <span className="text-[10px] text-emerald-600 font-bold">✓ Image attached & ready</span>
-                </div>
-              </div>
+              <R2FileUploader
+                folder="slips"
+                accept="image/*,application/pdf"
+                label="Deposit Slip Photo / ATM Receipt"
+                helperText="Upload photo or PDF receipt directly to Cloudflare R2"
+                isImage={true}
+                currentUrl={slipForm.slipImage}
+                onUploadSuccess={(res) => {
+                  if (res.url) {
+                    setSlipForm((prev) => ({ ...prev, slipImage: res.url }));
+                  }
+                }}
+              />
             </div>
 
             <button

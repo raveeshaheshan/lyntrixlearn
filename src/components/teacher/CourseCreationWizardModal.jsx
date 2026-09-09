@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { sound } from '../../utils/soundEffects';
 import confetti from 'canvas-confetti';
+import { R2FileUploader } from '../common/R2FileUploader';
 
 export const CourseCreationWizardModal = ({ isOpen, onClose }) => {
   const { currentTeacher, setInstructors, showToast } = useApp();
@@ -233,18 +234,19 @@ export const CourseCreationWizardModal = ({ isOpen, onClose }) => {
             </div>
 
             <div>
-              <label htmlFor="wizard-thumbnail-url" className="block text-xs font-bold text-slate-700 mb-1">Course Thumbnail Cover URL:</label>
-              <div className="p-3 bg-slate-50 border border-dashed border-slate-300 rounded-2xl flex items-center gap-3">
-                <img src={basicInfo.thumbnail} alt="Thumbnail preview" className="w-16 h-12 rounded-lg object-cover border" />
-                <input
-                  id="wizard-thumbnail-url"
-                  name="thumbnailUrl"
-                  type="text"
-                  value={basicInfo.thumbnail}
-                  onChange={(e) => setBasicInfo({ ...basicInfo, thumbnail: e.target.value })}
-                  className="flex-1 bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono text-slate-700 focus:outline-none"
-                />
-              </div>
+              <R2FileUploader
+                folder="thumbnails"
+                accept="image/*"
+                label="Course Thumbnail Cover (Cloudflare R2)"
+                helperText="Upload custom course banner or cover image"
+                isImage={true}
+                currentUrl={basicInfo.thumbnail}
+                onUploadSuccess={(res) => {
+                  if (res.url) {
+                    setBasicInfo((prev) => ({ ...prev, thumbnail: res.url }));
+                  }
+                }}
+              />
             </div>
 
             <div className="flex items-center justify-end pt-3 border-t border-slate-100">

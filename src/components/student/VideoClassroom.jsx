@@ -381,14 +381,26 @@ export const VideoClassroom = () => {
             <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-slate-100 text-xs text-slate-700">
               <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
                 <FileText className="w-4 h-4 text-blue-600" />
-                <span className="font-semibold">{activeLesson.notesPdf}</span>
-                <button
-                  onClick={() => showToast("PDF Lecture Note downloaded!", "success")}
-                  className="text-blue-600 hover:underline font-bold ml-2 flex items-center gap-1"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  Download
-                </button>
+                <span className="font-semibold truncate max-w-xs">{activeLesson.notesPdf}</span>
+                {activeLesson.notesPdfUrl || (activeLesson.notesPdf && activeLesson.notesPdf.startsWith('http')) ? (
+                  <a
+                    href={activeLesson.notesPdfUrl || activeLesson.notesPdf}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline font-bold ml-2 flex items-center gap-1"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    Download (R2 CDN)
+                  </a>
+                ) : (
+                  <button
+                    onClick={() => showToast(`Sample PDF: ${activeLesson.notesPdf} (Download Ready)`, "success")}
+                    className="text-blue-600 hover:underline font-bold ml-2 flex items-center gap-1"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    Download
+                  </button>
+                )}
               </div>
             </div>
           </div>
