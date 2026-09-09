@@ -55,12 +55,12 @@ const AppContent = () => {
 
       {/* 3. Main Workspace Layout */}
       {isDashboardRole ? (
-        <div className="flex-1 flex max-w-7xl w-full mx-auto">
-          {/* Persistent LMS Left Sidebar */}
+        <div className="flex-1 flex flex-col md:flex-row max-w-7xl w-full mx-auto">
+          {/* Persistent LMS Left Sidebar (desktop) & Mobile Tab Bar (mobile) */}
           <Sidebar />
 
           {/* Main Portal View */}
-          <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+          <main className="flex-1 p-3.5 sm:p-6 lg:p-8 overflow-y-auto w-full max-w-full">
             {currentRole === 'teacher' && <TeacherDashboard />}
             {currentRole === 'student' && <StudentPortal />}
           </main>

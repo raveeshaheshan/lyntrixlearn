@@ -150,22 +150,22 @@ export const AuthModal = ({ isOpen, onClose, defaultRole = 'teacher' }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 sm:p-8 space-y-6 shadow-2xl animate-in zoom-in-95 relative my-auto">
+    <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+      <div className="bg-white border border-[#E1EDF7] rounded-3xl max-w-md w-full p-5 sm:p-7 space-y-4 sm:space-y-5 shadow-2xl animate-in zoom-in-95 relative my-auto max-h-[92vh] overflow-y-auto">
         {/* Top bar */}
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black text-xs shadow-sm">
+        <div className="flex items-center justify-between pb-3 border-b border-[#E1EDF7]">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-[#8EC5FC] text-[#2C3E50] flex items-center justify-center font-black text-xs shadow-sm border border-[#8EC5FC]">
               LL
             </div>
             <div>
-              <h3 className="font-black text-slate-900 text-base">LMS Student Portal Login</h3>
-              <p className="text-[11px] text-slate-500">Enter your registered student email or index number</p>
+              <h3 className="font-black text-[#2C3E50] text-sm sm:text-base">Student Portal Login</h3>
+              <p className="text-[11px] text-[#4A6572]">Enter registered email or index number</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-900 flex items-center justify-center font-bold"
+            className="w-8 h-8 rounded-full bg-[#F4F8FA] border border-[#E1EDF7] text-[#2C3E50] hover:bg-[#E1EDF7] flex items-center justify-center font-bold text-sm transition"
           >
             ✕
           </button>
@@ -175,20 +175,20 @@ export const AuthModal = ({ isOpen, onClose, defaultRole = 'teacher' }) => {
         <div className={`p-3 rounded-2xl border flex items-center justify-between text-xs ${
           isLiveDb 
             ? 'bg-emerald-50 border-emerald-200 text-emerald-800' 
-            : 'bg-blue-50 border-blue-200 text-blue-800'
+            : 'bg-[#F4F8FA] border-[#E1EDF7] text-[#2C3E50]'
         }`}>
           <div className="flex items-center gap-2 font-medium">
-            <Database className="w-4 h-4 text-blue-600" />
-            <span>Database: <strong>{isLiveDb ? 'Supabase Connected' : 'Supabase Ready (Ready for .env)'}</strong></span>
+            <Database className="w-4 h-4 text-[#6BA8E5]" />
+            <span>Database: <strong>{isLiveDb ? 'Supabase Connected' : 'Supabase Ready'}</strong></span>
           </div>
-          <span className="text-[10px] font-bold bg-white px-2 py-0.5 rounded border shadow-sm">
+          <span className="text-[10px] font-bold bg-white px-2 py-0.5 rounded border border-[#E1EDF7] text-[#2C3E50] shadow-sm">
             PostgreSQL
           </span>
         </div>
 
         {/* Error message */}
         {errorMessage && (
-          <div className="p-3.5 bg-rose-500/10 border-2 border-rose-500/40 rounded-2xl text-xs text-rose-700 font-semibold flex items-center gap-2.5 shadow-md shadow-rose-500/10 animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="p-3.5 bg-rose-500/10 border border-rose-300 rounded-2xl text-xs text-rose-700 font-semibold flex items-center gap-2.5 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
             <AlertCircle className="w-5 h-5 shrink-0 text-rose-600" />
             <div className="space-y-0.5">
               <div className="font-bold text-rose-800 text-[11px] uppercase tracking-wider">
@@ -200,9 +200,9 @@ export const AuthModal = ({ isOpen, onClose, defaultRole = 'teacher' }) => {
         )}
 
         {/* Unified Clean Login Form */}
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleLogin} className="space-y-3.5 sm:space-y-4">
           <div>
-            <label htmlFor="student-auth-email" className="block text-xs font-bold text-slate-700 mb-1">
+            <label htmlFor="student-auth-email" className="block text-xs font-bold text-[#2C3E50] mb-1">
               Email Address or Index Number:
             </label>
             <div className="relative">
@@ -214,14 +214,14 @@ export const AuthModal = ({ isOpen, onClose, defaultRole = 'teacher' }) => {
                 placeholder="e.g. nimesh.f@gmail.com or LYN-26-8821"
                 value={email}
                 onChange={(e) => { setEmail(e.target.value); setErrorMessage(''); }}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-500 shadow-sm"
+                className="w-full bg-[#F4F8FA] border border-[#E1EDF7] rounded-xl pl-10 pr-4 py-2.5 text-xs text-[#2C3E50] focus:outline-none focus:border-[#8EC5FC] shadow-sm"
               />
-              <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Mail className="w-4 h-4 text-[#6BA8E5] absolute left-3.5 top-1/2 -translate-y-1/2" />
             </div>
           </div>
 
           <div>
-            <label htmlFor="student-auth-password" className="block text-xs font-bold text-slate-700 mb-1">Secure Password:</label>
+            <label htmlFor="student-auth-password" className="block text-xs font-bold text-[#2C3E50] mb-1">Secure Password:</label>
             <div className="relative">
               <input
                 id="student-auth-password"
@@ -231,13 +231,13 @@ export const AuthModal = ({ isOpen, onClose, defaultRole = 'teacher' }) => {
                 placeholder="••••••••••••"
                 value={password}
                 onChange={(e) => { setPassword(e.target.value); setErrorMessage(''); }}
-                className={`w-full bg-slate-50 border rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 focus:outline-none transition-all ${
+                className={`w-full bg-[#F4F8FA] border rounded-xl pl-10 pr-4 py-2.5 text-xs text-[#2C3E50] focus:outline-none transition-all ${
                   errorMessage.includes('Password') 
                     ? 'border-2 border-rose-500 bg-rose-50/30 ring-2 ring-rose-500/20 shadow-[0_0_12px_rgba(244,63,94,0.2)]' 
-                    : 'border-slate-200 focus:border-blue-500 shadow-sm'
+                    : 'border-[#E1EDF7] focus:border-[#8EC5FC] shadow-sm'
                 }`}
               />
-              <Lock className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 ${errorMessage.includes('Password') ? 'text-rose-500' : 'text-slate-400'}`} />
+              <Lock className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 ${errorMessage.includes('Password') ? 'text-rose-500' : 'text-[#6BA8E5]'}`} />
             </div>
             {errorMessage.includes('Password') && (
               <p className="text-[11px] font-bold text-rose-600 mt-1 animate-in fade-in">
@@ -249,7 +249,7 @@ export const AuthModal = ({ isOpen, onClose, defaultRole = 'teacher' }) => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/20 transition flex items-center justify-center gap-2"
+            className="w-full py-3 bg-[#8EC5FC] hover:bg-[#6BA8E5] text-[#2C3E50] hover:text-white rounded-xl text-xs font-bold shadow-md shadow-[#8EC5FC]/25 transition flex items-center justify-center gap-2 active:scale-95 border border-[#8EC5FC]"
           >
             <Key className="w-4 h-4" />
             <span>{isLoading ? 'Authenticating...' : 'Enter Student Portal'}</span>

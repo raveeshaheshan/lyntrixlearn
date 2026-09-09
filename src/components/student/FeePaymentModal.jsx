@@ -75,146 +75,143 @@ export const FeePaymentModal = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-6 space-y-6 shadow-2xl animate-in zoom-in-95 my-auto max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+      <div className="bg-white border border-[#E1EDF7] rounded-3xl max-w-lg w-full p-4 sm:p-6 space-y-4 sm:space-y-5 shadow-2xl animate-in zoom-in-95 my-auto max-h-[92vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="flex items-center justify-between pb-3 border-b border-[#E1EDF7]">
           <div>
-            <h3 className="font-black text-slate-900 text-base">August 2026 Monthly Class Fee</h3>
-            <p className="text-xs text-blue-600 font-bold">{batch.title}</p>
+            <h3 className="font-black text-[#2C3E50] text-sm sm:text-base">Monthly Class Tuition Fee</h3>
+            <p className="text-xs text-[#357ABD] font-bold truncate max-w-[240px] sm:max-w-none">{batch.title}</p>
           </div>
           <button
             onClick={() => setPaymentModalData(null)}
-            className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-900 flex items-center justify-center font-bold"
+            className="w-8 h-8 rounded-full bg-[#F4F8FA] border border-[#E1EDF7] text-[#2C3E50] hover:bg-[#E1EDF7] flex items-center justify-center font-bold text-sm transition"
           >
             ✕
           </button>
         </div>
 
         {/* Amount Summary */}
-        <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-between">
-          <div>
-            <div className="text-xs text-slate-600 font-medium">Instructor: {instructor.name}</div>
-            <div className="text-sm font-bold text-slate-900">{batch.code} • 1 Month Access</div>
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-[#F4F8FA] border border-[#E1EDF7] flex items-center justify-between gap-3">
+          <div className="overflow-hidden">
+            <div className="text-xs text-[#4A6572] font-medium truncate">Instructor: {instructor.name}</div>
+            <div className="text-xs sm:text-sm font-bold text-[#2C3E50] truncate">{batch.code} • 1 Month Access</div>
           </div>
-          <div className="text-right">
-            <div className="text-xs text-slate-500 font-medium">Total Fee</div>
-            <div className="text-xl font-black text-emerald-600">LKR {batch.monthlyFee}</div>
+          <div className="text-right shrink-0">
+            <div className="text-[10px] sm:text-xs text-[#4A6572] font-medium">Total Fee</div>
+            <div className="text-lg sm:text-xl font-black text-[#2C3E50] font-mono">LKR {batch.monthlyFee}</div>
           </div>
         </div>
 
         {/* Mode Selector */}
-        <div className="grid grid-cols-2 gap-2 bg-slate-100 p-1 rounded-2xl border border-slate-200">
+        <div className="grid grid-cols-2 gap-2 bg-[#F4F8FA] p-1 rounded-2xl border border-[#E1EDF7]">
           <button
             type="button"
             onClick={() => setPaymentMode('card')}
-            className={`py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 ${
+            className={`py-2 sm:py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${
               paymentMode === 'card'
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-[#8EC5FC] text-[#2C3E50] shadow-sm border border-[#8EC5FC]'
+                : 'text-[#4A6572] hover:text-[#2C3E50]'
             }`}
           >
-            <CreditCard className="w-4 h-4" />
-            <span>Instant Card Gateway</span>
+            <CreditCard className="w-4 h-4 text-[#6BA8E5]" />
+            <span>Card Gateway</span>
           </button>
 
           <button
             type="button"
             onClick={() => setPaymentMode('slip')}
-            className={`py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 ${
+            className={`py-2 sm:py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${
               paymentMode === 'slip'
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-[#8EC5FC] text-[#2C3E50] shadow-sm border border-[#8EC5FC]'
+                : 'text-[#4A6572] hover:text-[#2C3E50]'
             }`}
           >
-            <UploadCloud className="w-4 h-4" />
-            <span>Upload Bank Slip</span>
+            <UploadCloud className="w-4 h-4 text-[#6BA8E5]" />
+            <span>Bank Slip</span>
           </button>
         </div>
 
         {/* FORM 1: ONLINE CARD PAYMENT */}
         {paymentMode === 'card' && (
-          <form onSubmit={handleCardSubmit} className="space-y-4">
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 space-y-1">
-              <div className="flex items-center gap-1.5 text-emerald-600 font-bold">
-                <Lock className="w-3.5 h-3.5" />
-                <span>256-Bit SSL Encrypted Payment</span>
+          <form onSubmit={handleCardSubmit} className="space-y-3.5 sm:space-y-4">
+            <div className="p-3 rounded-xl bg-[#F4F8FA] border border-[#E1EDF7] text-xs text-[#4A6572] space-y-1">
+              <div className="flex items-center gap-1.5 text-emerald-700 font-bold">
+                <Lock className="w-3.5 h-3.5 text-emerald-600" />
+                <span>256-Bit SSL Encrypted Card Checkout</span>
               </div>
-              <p className="text-[11px] text-slate-500">Instant class activation upon successful card authorization.</p>
+              <p className="text-[11px] text-[#4A6572]">Instant pass activation right after checkout confirmation.</p>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Card Number:</label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={cardNumber}
-                  onChange={(e) => setCardNumber(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-900 font-mono focus:outline-none focus:border-blue-500"
-                  required
-                />
-                <CreditCard className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
-              </div>
+              <label className="block text-xs font-bold text-[#2C3E50] mb-1">Card Number:</label>
+              <input
+                type="text"
+                value={cardNumber}
+                onChange={(e) => setCardNumber(e.target.value)}
+                className="w-full bg-[#F4F8FA] border border-[#E1EDF7] rounded-xl px-3 py-2 text-xs text-[#2C3E50] font-mono focus:outline-none focus:border-[#8EC5FC]"
+                placeholder="4532 •••• •••• 8812"
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Expiry Date:</label>
+                <label className="block text-xs font-bold text-[#2C3E50] mb-1">Expires:</label>
                 <input
                   type="text"
                   value={cardExpiry}
                   onChange={(e) => setCardExpiry(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-mono focus:outline-none focus:border-blue-500"
-                  required
+                  className="w-full bg-[#F4F8FA] border border-[#E1EDF7] rounded-xl px-3 py-2 text-xs text-[#2C3E50] font-mono focus:outline-none focus:border-[#8EC5FC]"
+                  placeholder="MM/YY"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">CVC / CVV:</label>
+                <label className="block text-xs font-bold text-[#2C3E50] mb-1">CVC / CVV:</label>
                 <input
-                  type="password"
-                  maxLength={3}
+                  type="text"
                   value={cardCvc}
                   onChange={(e) => setCardCvc(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-mono focus:outline-none focus:border-blue-500"
-                  required
+                  className="w-full bg-[#F4F8FA] border border-[#E1EDF7] rounded-xl px-3 py-2 text-xs text-[#2C3E50] font-mono focus:outline-none focus:border-[#8EC5FC]"
+                  placeholder="742"
                 />
               </div>
             </div>
 
             <button
               type="submit"
-              className="w-full py-3 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-500/20 transition flex items-center justify-center gap-2"
+              className="w-full py-3 bg-[#8EC5FC] hover:bg-[#6BA8E5] text-[#2C3E50] hover:text-white rounded-xl text-xs font-bold shadow-md shadow-[#8EC5FC]/25 transition flex items-center justify-center gap-2 active:scale-95 border border-[#8EC5FC]"
             >
-              <span>Pay LKR {batch.monthlyFee} & Activate Instantly</span>
+              <CreditCard className="w-4 h-4" />
+              <span>Pay LKR {batch.monthlyFee} & Unlock Pass</span>
             </button>
           </form>
         )}
 
-        {/* FORM 2: BANK DEPOSIT SLIP UPLOAD */}
+        {/* FORM 2: BANK SLIP UPLOAD */}
         {paymentMode === 'slip' && (
-          <form onSubmit={handleSlipSubmit} className="space-y-4">
-            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5 text-xs">
-              <div className="font-bold text-blue-700 flex items-center gap-1.5">
-                <Building2 className="w-4 h-4 text-amber-500" />
-                <span>Sir's Direct Bank Account:</span>
+          <form onSubmit={handleSlipSubmit} className="space-y-3.5 sm:space-y-4">
+            <div className="p-3.5 rounded-2xl bg-[#F4F8FA] border border-[#E1EDF7] text-xs space-y-1.5">
+              <div className="flex items-center gap-2 text-[#357ABD] font-bold">
+                <Building2 className="w-4 h-4 text-[#6BA8E5]" />
+                <span>Tuition Master's Official Bank Account</span>
               </div>
-              <div className="text-slate-700 font-medium">
-                Bank: <strong className="text-slate-900">{instructor.bankDetails?.bank || "Commercial Bank"}</strong>
+              <div className="text-[#4A6572] font-medium">
+                Bank: <strong className="text-[#2C3E50]">{instructor.bankDetails?.bank || "Commercial Bank"}</strong>
               </div>
-              <div className="text-slate-700 font-medium">
-                Account Name: <strong className="text-slate-900">{instructor.bankDetails?.accountName || instructor.name}</strong>
+              <div className="text-[#4A6572] font-medium">
+                Account Name: <strong className="text-[#2C3E50]">{instructor.bankDetails?.accountName || instructor.name}</strong>
               </div>
-              <div className="text-slate-700 font-medium">
-                Account Number: <strong className="text-emerald-600 font-mono text-sm">{instructor.bankDetails?.accountNumber || "8009124451"}</strong>
+              <div className="text-[#4A6572] font-medium">
+                Account Number: <strong className="text-[#2C3E50] font-mono text-sm">{instructor.bankDetails?.accountNumber || "8009124451"}</strong>
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Select Deposited Bank:</label>
+              <label className="block text-xs font-bold text-[#2C3E50] mb-1">Select Deposited Bank:</label>
               <select
                 value={slipForm.bank}
                 onChange={(e) => setSlipForm({ ...slipForm, bank: e.target.value })}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-500"
+                className="w-full bg-[#F4F8FA] border border-[#E1EDF7] rounded-xl px-3 py-2 text-xs text-[#2C3E50] focus:outline-none focus:border-[#8EC5FC]"
               >
                 <option value="Commercial Bank">Commercial Bank of Ceylon</option>
                 <option value="Bank of Ceylon (BOC)">Bank of Ceylon (BOC)</option>
@@ -225,38 +222,38 @@ export const FeePaymentModal = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Deposit Slip Reference No:</label>
+              <label className="block text-xs font-bold text-[#2C3E50] mb-1">Deposit Slip Reference No:</label>
               <input
                 type="text"
                 placeholder="e.g. COMB-889921 or CDM-4512"
                 value={slipForm.referenceNo}
                 onChange={(e) => setSlipForm({ ...slipForm, referenceNo: e.target.value })}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-mono focus:outline-none focus:border-blue-500"
+                className="w-full bg-[#F4F8FA] border border-[#E1EDF7] rounded-xl px-3 py-2 text-xs text-[#2C3E50] font-mono focus:outline-none focus:border-[#8EC5FC]"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Slip Photo / Screenshot:</label>
-              <div className="p-3 bg-slate-50 border border-dashed border-slate-300 rounded-2xl flex items-center gap-3">
+              <label className="block text-xs font-bold text-[#2C3E50] mb-1">Slip Photo / Screenshot:</label>
+              <div className="p-3 bg-[#F4F8FA] border border-dashed border-[#8EC5FC] rounded-2xl flex items-center gap-3">
                 <img
                   src={slipForm.slipImage}
                   alt="Slip preview"
-                  className="w-14 h-14 rounded-xl object-cover border border-slate-200"
+                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl object-cover border border-[#E1EDF7]"
                 />
-                <div className="text-xs text-slate-600 space-y-1">
-                  <div className="text-slate-900 font-bold">deposit_receipt_august.jpg</div>
-                  <span className="text-[10px] text-emerald-600 font-bold">✓ Image verified & ready to upload</span>
+                <div className="text-xs text-[#4A6572] space-y-0.5 overflow-hidden">
+                  <div className="text-[#2C3E50] font-bold truncate">deposit_receipt_august.jpg</div>
+                  <span className="text-[10px] text-emerald-600 font-bold">✓ Image attached & ready</span>
                 </div>
               </div>
             </div>
 
             <button
               type="submit"
-              className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/20 transition flex items-center justify-center gap-2"
+              className="w-full py-3 bg-[#8EC5FC] hover:bg-[#6BA8E5] text-[#2C3E50] hover:text-white rounded-xl text-xs font-bold shadow-md shadow-[#8EC5FC]/25 transition flex items-center justify-center gap-2 active:scale-95 border border-[#8EC5FC]"
             >
               <UploadCloud className="w-4 h-4" />
-              <span>Submit Slip for Teacher Approval</span>
+              <span>Submit Slip for Approval</span>
             </button>
           </form>
         )}
