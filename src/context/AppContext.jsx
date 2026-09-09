@@ -107,7 +107,8 @@ const STORAGE_KEYS = {
   ADMIN_AUTH: 'lyntrix_auth_admin',
   ACTIVE_TAB: 'lyntrix_active_tab',
   QUIZZES: 'lyntrix_stored_quizzes',
-  QUIZ_SUBMISSIONS: 'lyntrix_quiz_submissions'
+  QUIZ_SUBMISSIONS: 'lyntrix_quiz_submissions',
+  ONGOING_EXAM: 'lyntrix_active_ongoing_exam'
 };
 
 export const AppProvider = ({ children }) => {
@@ -277,6 +278,26 @@ export const AppProvider = ({ children }) => {
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [currentRole]);
+
+  // ----------------------------------------------------
+  // Active Ongoing Exam Lock & Restoration (Persists until Submitted)
+  // ----------------------------------------------------
+  useEffect(() => {
+    try {
+      const ongoingExamId = localStorage.getItem(STORAGE_KEYS.ONGOING_EXAM);
+      if (ongoingExamId && quizzes.length > 0) {
+        const found = quizzes.find(q => q.id === ongoingExamId);
+        if (found) {
+          if (!activeQuiz || activeQuiz.id !== found.id) {
+            setActiveQuiz(found);
+          }
+          if (currentRole !== 'student') {
+            setCurrentRole('student');
+          }
+        }
+      }
+    } catch (e) {}
+  }, [quizzes, activeQuiz, currentRole]);
 
   // ----------------------------------------------------
   // Automatic Subdomain & Hostname Resolver (kasun.lyntrix.learn or ?subdomain=kasun)
@@ -1295,6 +1316,14 @@ export const AppProvider = ({ children }) => {
   };
 
   const switchRole = (role) => {
+    try {
+      const ongoingExamId = localStorage.getItem(STORAGE_KEYS.ONGOING_EXAM);
+      if (ongoingExamId && role !== 'student') {
+        sound.playClick();
+        showToast("⚠️ Examination in progress! The exam room is locked until you submit your paper.", "error");
+        return;
+      }
+    } catch (e) {}
     sound.playClick();
     setCurrentRole(role);
     setActiveTab('overview');
