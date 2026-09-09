@@ -99,16 +99,48 @@ const setStoredCache = (key, val) => {
   } catch (e) {}
 };
 
+// Persistent Storage Keys (Survives Refresh, Tab Swapping & Browser Restarts)
+const STORAGE_KEYS = {
+  ROLE: 'lyntrix_auth_role',
+  TEACHER_ID: 'lyntrix_auth_teacher_id',
+  STUDENT_ID: 'lyntrix_auth_student_id',
+  ADMIN_AUTH: 'lyntrix_auth_admin',
+  ACTIVE_TAB: 'lyntrix_active_tab',
+  QUIZZES: 'lyntrix_stored_quizzes',
+  QUIZ_SUBMISSIONS: 'lyntrix_quiz_submissions'
+};
+
 export const AppProvider = ({ children }) => {
   // Navigation & Role State: 'landing' | 'admin' | 'teacher' | 'student' | 'scanner'
-  const [currentRole, setCurrentRole] = useState('landing');
-  const [activeTab, setActiveTab] = useState('overview');
+  const [currentRole, setCurrentRole] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.ROLE);
+      if (saved && ['landing', 'admin', 'teacher', 'student', 'scanner', 'teacher-login', 'auth'].includes(saved)) {
+        return saved;
+      }
+    } catch (e) {}
+    return 'landing';
+  });
+
+  const [activeTab, setActiveTab] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.ACTIVE_TAB);
+      if (saved) return saved;
+    } catch (e) {}
+    return 'overview';
+  });
   
   // Theme State: 'royal' | 'emerald' | 'light' | 'cyber'
   const [theme, setTheme] = useState('light');
 
   // Super Admin Authentication State
-  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(() => {
+    try {
+      return localStorage.getItem(STORAGE_KEYS.ADMIN_AUTH) === 'true';
+    } catch (e) {
+      return false;
+    }
+  });
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -121,16 +153,130 @@ export const AppProvider = ({ children }) => {
 
   // Active Entities (Initialized with fast cache or clean live DB defaults)
   const [instructors, setInstructors] = useState(() => getStoredCache('instructors', [DEFAULT_INSTRUCTOR]));
-  const [currentTeacherId, setCurrentTeacherId] = useState(() => getStoredCache('currentTeacherId', DEFAULT_INSTRUCTOR.id));
+  const [currentTeacherId, setCurrentTeacherId] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.TEACHER_ID);
+      if (saved) return saved;
+    } catch (e) {}
+    return getStoredCache('currentTeacherId', DEFAULT_INSTRUCTOR.id);
+  });
   
   const [students, setStudents] = useState(() => getStoredCache('students', [DEFAULT_STUDENT]));
-  const [currentStudentId, setCurrentStudentId] = useState(() => getStoredCache('currentStudentId', DEFAULT_STUDENT.id));
+  const [currentStudentId, setCurrentStudentId] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.STUDENT_ID);
+      if (saved) return saved;
+    } catch (e) {}
+    return getStoredCache('currentStudentId', DEFAULT_STUDENT.id);
+  });
   
   const [lessons, setLessons] = useState(() => getStoredCache('lessons', []));
   const [bankSlips, setBankSlips] = useState(() => getStoredCache('bankSlips', []));
   const [attendanceLogs, setAttendanceLogs] = useState(() => getStoredCache('attendanceLogs', []));
-  const [quizzes, setQuizzes] = useState(INITIAL_QUIZZES || []);
-  const [quizSubmissions, setQuizSubmissions] = useState([]);
+
+  // Quizzes & Submissions with localStorage persistence
+  const [quizzes, setQuizzes] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.QUIZZES);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return INITIAL_QUIZZES || [];
+  });
+
+  const [quizSubmissions, setQuizSubmissions] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.QUIZ_SUBMISSIONS);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch (e) {}
+    return [];
+  });
+
+  // ----------------------------------------------------
+  // Persistent Storage Sync Effects
+  // ----------------------------------------------------
+  useEffect(() => {
+    try {
+      if (currentRole === 'landing') {
+        localStorage.removeItem(STORAGE_KEYS.ROLE);
+        localStorage.removeItem(STORAGE_KEYS.ACTIVE_TAB);
+      } else if (currentRole) {
+        localStorage.setItem(STORAGE_KEYS.ROLE, currentRole);
+      }
+    } catch (e) {}
+  }, [currentRole]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.ADMIN_AUTH, String(isAdminAuthenticated));
+    } catch (e) {}
+  }, [isAdminAuthenticated]);
+
+  useEffect(() => {
+    try {
+      if (currentTeacherId) {
+        localStorage.setItem(STORAGE_KEYS.TEACHER_ID, currentTeacherId);
+      }
+    } catch (e) {}
+  }, [currentTeacherId]);
+
+  useEffect(() => {
+    try {
+      if (currentStudentId) {
+        localStorage.setItem(STORAGE_KEYS.STUDENT_ID, currentStudentId);
+      }
+    } catch (e) {}
+  }, [currentStudentId]);
+
+  useEffect(() => {
+    try {
+      if (activeTab) {
+        localStorage.setItem(STORAGE_KEYS.ACTIVE_TAB, activeTab);
+      }
+    } catch (e) {}
+  }, [activeTab]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.QUIZZES, JSON.stringify(quizzes));
+    } catch (e) {}
+  }, [quizzes]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.QUIZ_SUBMISSIONS, JSON.stringify(quizSubmissions));
+    } catch (e) {}
+  }, [quizSubmissions]);
+
+  // Realtime multi-tab synchronization for newly published teacher MCQs
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === STORAGE_KEYS.QUIZZES && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed)) setQuizzes(parsed);
+        } catch (err) {}
+      }
+      if (e.key === STORAGE_KEYS.QUIZ_SUBMISSIONS && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed)) setQuizSubmissions(parsed);
+        } catch (err) {}
+      }
+      if (e.key === STORAGE_KEYS.ROLE && e.newValue) {
+        if (e.newValue !== currentRole) {
+          setCurrentRole(e.newValue);
+        }
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [currentRole]);
 
   // ----------------------------------------------------
   // Automatic Subdomain & Hostname Resolver (kasun.lyntrix.learn or ?subdomain=kasun)
@@ -745,6 +891,11 @@ export const AppProvider = ({ children }) => {
   const adminLogout = () => {
     setIsAdminAuthenticated(false);
     setCurrentRole('landing');
+    try {
+      localStorage.removeItem(STORAGE_KEYS.ROLE);
+      localStorage.removeItem(STORAGE_KEYS.ADMIN_AUTH);
+      localStorage.removeItem(STORAGE_KEYS.ACTIVE_TAB);
+    } catch (e) {}
     sound.playClick();
     showToast("Super Admin Logged Out", "info");
   };
@@ -970,13 +1121,24 @@ export const AppProvider = ({ children }) => {
   };
 
   const addQuizByTeacher = (quizData) => {
+    const matchedBatch = currentTeacher?.batches?.find(b => b.id === (quizData.batchId || currentTeacher?.batches?.[0]?.id));
     const newQuiz = {
       id: `quiz-${Date.now()}`,
       instructorId: currentTeacher.id,
+      instructorName: currentTeacher.name,
       subject: currentTeacher.subject,
+      batchId: quizData.batchId || currentTeacher?.batches?.[0]?.id || 'batch-kasunmaths-2026-theory',
+      batchTitle: matchedBatch?.title || currentTeacher?.batches?.[0]?.title || `${currentTeacher.subject} Masterclass`,
+      createdAt: new Date().toISOString(),
       ...quizData
     };
-    setQuizzes(prev => [newQuiz, ...prev]);
+    setQuizzes(prev => {
+      const updated = [newQuiz, ...prev];
+      try {
+        localStorage.setItem(STORAGE_KEYS.QUIZZES, JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
     sound.playChimeApproved();
     showToast(`MCQ Exam Paper "${newQuiz.title}" published to students!`, "success");
     return newQuiz;
@@ -991,7 +1153,13 @@ export const AppProvider = ({ children }) => {
       submittedAt: new Date().toLocaleString(),
       ...submissionData
     };
-    setQuizSubmissions(prev => [newSub, ...prev]);
+    setQuizSubmissions(prev => {
+      const updated = [newSub, ...prev];
+      try {
+        localStorage.setItem(STORAGE_KEYS.QUIZ_SUBMISSIONS, JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
     sound.playChimeApproved();
     showToast(`Exam Submitted! You scored ${newSub.score}/${newSub.totalMarks} (${newSub.percentage}%)`, 'success');
   };

@@ -49,10 +49,52 @@ export const StudentPortal = () => {
   } = useApp();
 
   const [lessonFilter, setLessonFilter] = useState('All');
+  const [quizScope, setQuizScope] = useState('all');
   const [showCertModal, setShowCertModal] = useState(false);
   const [showAvatarModal, setShowAvatarModal] = useState(false);
 
   const studentSlips = bankSlips.filter(s => s.studentId === currentStudent.id);
+
+  const isEnrolledQuiz = (quiz) => {
+    if (!currentStudent?.enrollments || currentStudent.enrollments.length === 0) return true;
+    return currentStudent.enrollments.some(e => {
+      if (e.batchId && quiz.batchId && e.batchId === quiz.batchId) return true;
+      if (e.instructorId && quiz.instructorId && e.instructorId === quiz.instructorId) return true;
+      const enrId = (e.instructorId || '').toLowerCase();
+      const quizInsId = (quiz.instructorId || '').toLowerCase();
+      if (enrId && quizInsId) {
+        if (enrId.includes('kasun') && quizInsId.includes('kasun')) return true;
+        if (enrId.includes('amila') && quizInsId.includes('amila')) return true;
+        if (enrId.includes('dilshan') && quizInsId.includes('dilshan')) return true;
+      }
+      const enrInstructor = instructors.find(i => i.id === e.instructorId);
+      if (enrInstructor && quiz.subject && enrInstructor.subject.toLowerCase() === quiz.subject.toLowerCase()) return true;
+      if (quiz.title && e.batchId && quiz.title.toLowerCase().includes((e.batchId.split('-')[1] || '').toLowerCase())) return true;
+      return false;
+    });
+  };
+
+  const checkIsPaid = (quiz) => {
+    if (!currentStudent?.enrollments || currentStudent.enrollments.length === 0) return true;
+    const matchingEnrollment = currentStudent.enrollments.find(e => {
+      if (e.batchId && quiz.batchId && e.batchId === quiz.batchId) return true;
+      if (e.instructorId && quiz.instructorId && e.instructorId === quiz.instructorId) return true;
+      const enrId = (e.instructorId || '').toLowerCase();
+      const quizInsId = (quiz.instructorId || '').toLowerCase();
+      if (enrId && quizInsId) {
+        if (enrId.includes('kasun') && quizInsId.includes('kasun')) return true;
+        if (enrId.includes('amila') && quizInsId.includes('amila')) return true;
+        if (enrId.includes('dilshan') && quizInsId.includes('dilshan')) return true;
+      }
+      const enrInstructor = instructors.find(i => i.id === e.instructorId);
+      if (enrInstructor && quiz.subject && enrInstructor.subject.toLowerCase() === quiz.subject.toLowerCase()) return true;
+      return false;
+    });
+    if (matchingEnrollment) {
+      return matchingEnrollment.paymentStatus === 'Paid';
+    }
+    return currentStudent.enrollments.some(e => e.paymentStatus === 'Paid');
+  };
 
   const handleOpenPayment = (batch, instructor) => {
     setPaymentModalData({ batch, instructor });
@@ -619,104 +661,156 @@ export const StudentPortal = () => {
         </div>
       )}
 
-      {/* QUIZZES TAB - STRICTLY ENROLLED SIRS & MARKS */}
+      {/* QUIZZES TAB - ALL & REGISTERED SIRS */}
       {activeTab === 'quizzes' && (
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold mb-2">
                 <Award className="w-3.5 h-3.5" />
-                <span>My Registered MCQ Exam Papers</span>
+                <span>Online MCQ Examination Center</span>
               </div>
-              <h2 className="text-2xl font-black text-slate-900">Online MCQ Tests & Exam Results</h2>
+              <h2 className="text-2xl font-black text-slate-900">MCQ Tests & Exam Challenges</h2>
               <p className="text-xs text-slate-500 mt-1">
-                Only displaying exam papers and marks for your registered Sirs and batches.
+                Attempt interactive timed exam papers published by your Master Teachers and track marks instantly.
               </p>
+            </div>
+
+            {/* Scope Filter Pills */}
+            <div className="flex items-center gap-2 bg-white p-1 rounded-2xl border border-slate-200 shadow-xs self-start sm:self-auto">
+              <button
+                onClick={() => setQuizScope('all')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${
+                  quizScope === 'all'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                }`}
+              >
+                All Academy Papers ({quizzes.length})
+              </button>
+              <button
+                onClick={() => setQuizScope('enrolled')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${
+                  quizScope === 'enrolled'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                }`}
+              >
+                My Enrolled Classes ({quizzes.filter(isEnrolledQuiz).length})
+              </button>
             </div>
           </div>
 
           {/* Filtered Quizzes */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {quizzes
-              .filter(quiz => {
-                return currentStudent.enrollments.some(e => 
-                  e.batchId === quiz.batchId || 
-                  e.instructorId === quiz.instructorId ||
-                  quiz.title.toLowerCase().includes(e.batchId.split('-')[1] || '')
-                );
-              })
-              .map(quiz => {
-                const enrollment = currentStudent.enrollments.find(e => e.batchId === quiz.batchId || e.instructorId === quiz.instructorId);
-                const isPaid = enrollment?.paymentStatus === 'Paid';
-                const submission = quizSubmissions.find(s => s.quizId === quiz.id && s.studentId === currentStudent.id);
+            {quizzes.filter(q => quizScope === 'all' ? true : isEnrolledQuiz(q)).length === 0 ? (
+              <div className="col-span-full bg-white p-12 rounded-3xl border border-dashed border-slate-200 text-center space-y-3">
+                <Award className="w-12 h-12 text-slate-300 mx-auto" />
+                <h3 className="font-bold text-slate-700">No MCQ Papers Found for this Filter</h3>
+                <p className="text-xs text-slate-400">There are no exam papers published yet under your enrolled classes.</p>
+                <button
+                  onClick={() => setQuizScope('all')}
+                  className="px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-xl text-xs font-bold transition"
+                >
+                  View All Available Academy Papers ({quizzes.length})
+                </button>
+              </div>
+            ) : (
+              quizzes
+                .filter(q => quizScope === 'all' ? true : isEnrolledQuiz(q))
+                .map(quiz => {
+                  const isPaid = checkIsPaid(quiz);
+                  const isEnrolled = isEnrolledQuiz(quiz);
+                  const submission = quizSubmissions.find(s => s.quizId === quiz.id && s.studentId === currentStudent.id);
+                  const quizTeacher = instructors.find(i => 
+                    i.id === quiz.instructorId || 
+                    (quiz.instructorId && i.id.includes(quiz.instructorId.replace('ins-', '')))
+                  );
 
-                return (
-                  <div key={quiz.id} className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">
-                          {quiz.subject}
-                        </span>
-                        <div className="flex items-center gap-2">
-                          {quiz.submitRequiredTime > 0 && (
-                            <span className="flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-lg">
-                              <Lock className="w-3 h-3 text-amber-600" />
-                              <span>Min {Math.max(0, quiz.durationMinutes - quiz.submitRequiredTime)}m required</span>
+                  return (
+                    <div key={quiz.id} className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between hover:shadow-md transition">
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between flex-wrap gap-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">
+                              {quiz.subject}
                             </span>
-                          )}
-                          <div className="flex items-center gap-1 text-xs text-slate-500 font-mono font-bold">
-                            <Clock className="w-3.5 h-3.5 text-amber-500" />
-                            <span>{quiz.durationMinutes} Minutes</span>
+                            {isEnrolled && (
+                              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                                ✓ Enrolled Sir
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {quiz.submitRequiredTime > 0 && (
+                              <span className="flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-lg">
+                                <Lock className="w-3 h-3 text-amber-600" />
+                                <span>Min {Math.max(0, quiz.durationMinutes - quiz.submitRequiredTime)}m required</span>
+                              </span>
+                            )}
+                            <div className="flex items-center gap-1 text-xs text-slate-500 font-mono font-bold">
+                              <Clock className="w-3.5 h-3.5 text-amber-500" />
+                              <span>{quiz.durationMinutes} Mins</span>
+                            </div>
                           </div>
                         </div>
+
+                        <div>
+                          <h3 className="font-bold text-slate-900 text-base">{quiz.title}</h3>
+                          <div className="text-xs text-slate-500 mt-1 flex items-center gap-2 flex-wrap">
+                            <span className="font-semibold text-slate-700">
+                              👨‍🏫 {quiz.instructorName || quizTeacher?.name || 'Master Instructor'}
+                            </span>
+                            <span>•</span>
+                            <span>{quiz.questions.length} Questions</span>
+                            <span>•</span>
+                            <span>{quiz.totalMarks} Marks</span>
+                          </div>
+                        </div>
+
+                        {submission && (
+                          <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center justify-between text-xs">
+                            <div>
+                              <span className="text-emerald-800 font-bold">Your Score: {submission.score} / {submission.totalMarks}</span>
+                              <div className="text-[10px] text-emerald-600 font-mono mt-0.5">Submitted: {submission.submittedAt}</div>
+                            </div>
+                            <span className="text-sm font-black text-emerald-700 bg-white px-2.5 py-1 rounded-xl shadow-sm border border-emerald-200">
+                              {submission.percentage}%
+                            </span>
+                          </div>
+                        )}
                       </div>
 
-                      <h3 className="font-bold text-slate-900 text-base">{quiz.title}</h3>
-                      <p className="text-xs text-slate-500">
-                        {quiz.questions.length} MCQ Questions • Total Marks: {quiz.totalMarks}
-                      </p>
-
-                      {submission && (
-                        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center justify-between text-xs">
-                          <div>
-                            <span className="text-emerald-800 font-bold">Your Score: {submission.score} / {submission.totalMarks}</span>
-                            <div className="text-[10px] text-emerald-600 font-mono mt-0.5">Submitted: {submission.submittedAt}</div>
-                          </div>
-                          <span className="text-sm font-black text-emerald-700 bg-white px-2.5 py-1 rounded-xl shadow-sm border border-emerald-200">
-                            {submission.percentage}%
-                          </span>
-                        </div>
-                      )}
+                      <div className="pt-2">
+                        {!isPaid ? (
+                          <button
+                            onClick={() => showToast("Please pay your monthly class fee to attempt this exam paper.", "error")}
+                            className="w-full py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2"
+                          >
+                            <Lock className="w-3.5 h-3.5" />
+                            <span>Class Fee Required to Attempt</span>
+                          </button>
+                        ) : submission ? (
+                          <button
+                            onClick={() => setActiveQuiz(quiz)}
+                            className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2"
+                          >
+                            <span>🔄 Retake MCQ Challenge</span>
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => setActiveQuiz(quiz)}
+                            className="w-full py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-500/20 transition flex items-center justify-center gap-2 active:scale-95"
+                          >
+                            <Sparkles className="w-4 h-4 text-amber-300" />
+                            <span>Start MCQ Challenge</span>
+                          </button>
+                        )}
+                      </div>
                     </div>
-
-                    <div className="pt-2">
-                      {!isPaid ? (
-                        <button
-                          onClick={() => showToast("Please pay your monthly class fee to attempt this exam paper.", "error")}
-                          className="w-full py-2.5 bg-rose-50 text-rose-700 border border-rose-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2"
-                        >
-                          <span>🔒 Class Fee Required to Attempt</span>
-                        </button>
-                      ) : submission ? (
-                        <button
-                          onClick={() => setActiveQuiz(quiz)}
-                          className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2"
-                        >
-                          <span>🔄 Retake MCQ Challenge</span>
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => setActiveQuiz(quiz)}
-                          className="w-full py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-500/20 transition flex items-center justify-center gap-2 active:scale-95"
-                        >
-                          <Sparkles className="w-4 h-4 text-amber-300" />
-                          <span>Start MCQ Challenge</span>
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+            )}
           </div>
         </div>
       )}
